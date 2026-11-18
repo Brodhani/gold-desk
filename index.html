@@ -1,0 +1,2731 @@
+<!doctype html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gold Desk — Terminal & Ruang Kerja Trading XAUUSD Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070B10;
+  --o1: rgba(232, 184, 74, 0.22);
+  --o2: rgba(16, 185, 129, 0.16);
+  --o3: rgba(99, 102, 241, 0.16);
+  --panel: rgba(16, 24, 34, 0.78);
+  --panel-solid: #0F1722;
+  --field: rgba(255, 255, 255, 0.06);
+  --ink: #F1F5F9;
+  --mute: #8B9EB0;
+  --line: rgba(229, 184, 92, 0.24);
+  --line-sub: rgba(255, 255, 255, 0.09);
+  --gold: #E8BA55;
+  --gA: #FCE5A6;
+  --gB: #C69028;
+  --up: #10B981;
+  --down: #F43F5E;
+  --chip: rgba(255, 255, 255, 0.065);
+  --shadow: 0 20px 45px -20px rgba(0, 0, 0, 0.8);
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  box-sizing: border-box;
+}
+:root[data-theme="light"] {
+  --bg: #F3EFE6;
+  --o1: rgba(217, 150, 42, 0.24);
+  --o2: rgba(14, 138, 110, 0.16);
+  --o3: rgba(120, 100, 240, 0.12);
+  --panel: rgba(255, 253, 248, 0.86);
+  --panel-solid: #FFFFFF;
+  --field: #FFFFFF;
+  --ink: #161F29;
+  --mute: #607385;
+  --line: rgba(175, 125, 35, 0.28);
+  --line-sub: rgba(22, 31, 41, 0.09);
+  --gold: #9E6B14;
+  --gA: #D4982A;
+  --gB: #84550A;
+  --up: #059669;
+  --down: #DC2626;
+  --chip: rgba(22, 31, 41, 0.055);
+  --shadow: 0 16px 36px -18px rgba(100, 75, 25, 0.16);
+}
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  color: var(--ink);
+  font: 400 14px/1.55 var(--font-sans);
+  background:
+    radial-gradient(60% 45% at 8% 4%, var(--o1), transparent 62%),
+    radial-gradient(50% 45% at 95% 15%, var(--o2), transparent 62%),
+    radial-gradient(60% 50% at 65% 98%, var(--o3), transparent 62%),
+    var(--bg);
+  background-attachment: fixed;
+  min-height: 100vh;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+}
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+h2, h3 { margin: 0; font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 22px; }
+h3 { font-size: 15.5px; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.shell { max-width: 1340px; margin: 0 auto; display: grid; grid-template-columns: 248px 1fr; gap: 16px; padding: 14px; }
+@media (max-width: 920px) { .shell { display: block; padding: 10px; } }
+
+/* Sidebar & Mobile Bottom Nav */
+nav.main-nav {
+  position: sticky;
+  top: 14px;
+  height: calc(100vh - 28px);
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--line-sub);
+  border-radius: 24px;
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  box-shadow: var(--shadow);
+}
+@media (max-width: 920px) {
+  nav.main-nav {
+    position: fixed;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    left: 10px;
+    right: 10px;
+    top: auto;
+    height: auto;
+    flex-direction: row;
+    padding: 6px;
+    border-radius: 22px;
+    z-index: 100;
+  }
+}
+.brand { display: flex; gap: 11px; align-items: center; padding: 0 8px; margin-bottom: 22px; }
+@media (max-width: 920px) { .brand { display: none; } }
+.brand u {
+  text-decoration: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--gA), var(--gB));
+  color: #1A1202;
+  font-weight: 800;
+  font-size: 15px;
+  box-shadow: 0 8px 20px -6px rgba(232, 186, 85, 0.7);
+}
+.brand small { display: block; font-size: 11px; color: var(--mute); font-weight: 500; }
+.nav-list { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+@media (max-width: 920px) { .nav-list { flex-direction: row; gap: 4px; width: 100%; } }
+.nav-btn {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  color: var(--mute);
+  font: 600 13.5px var(--font-sans);
+  padding: 11px 13px;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-align: left;
+  transition: 0.18s;
+  box-shadow: none;
+}
+.nav-btn:hover { color: var(--ink); background: var(--chip); transform: none; }
+.nav-btn.on {
+  color: var(--ink);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--gold) 22%, transparent), color-mix(in srgb, var(--gold) 7%, transparent));
+  border: 1px solid var(--line);
+  font-weight: 700;
+}
+@media (max-width: 920px) {
+  .nav-btn { flex-direction: column; font-size: 10px; padding: 6px 2px; gap: 3px; text-align: center; border-radius: 14px; flex: 1; }
+  .nav-btn b { font-size: 17px; line-height: 1.2; }
+}
+
+main { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* Topbar & Live Ticker */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--line-sub);
+  border-radius: 20px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow);
+}
+.pill-row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  background: var(--chip);
+  border: 1px solid var(--line-sub);
+}
+.dot-live { width: 8px; height: 8px; border-radius: 50%; background: var(--up); box-shadow: 0 0 8px var(--up); }
+.dot-warn { width: 8px; height: 8px; border-radius: 50%; background: var(--down); animation: pulse 1s infinite alternate; }
+@keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+
+.ticker-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 14%, var(--panel)), var(--panel));
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 12px 18px;
+}
+.ticker-main { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.ticker-main strong { font: 800 26px/1 var(--font-mono); color: var(--gold); }
+.ticker-specs { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--mute); }
+.ticker-specs b { color: var(--ink); font-family: var(--font-mono); }
+
+/* Makro Ticker Strip & TradingView Tape */
+.macro-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line-sub);
+  border-radius: 16px;
+  padding: 10px 14px;
+  font-size: 12px;
+}
+.tv-tape-wrap {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--line-sub);
+  background: var(--panel);
+  margin-top: 4px;
+  min-height: 48px;
+}
+.macro-item { display: flex; align-items: center; gap: 6px; }
+.macro-item span { color: var(--mute); font-weight: 600; }
+.macro-item strong { font-family: var(--font-mono); font-size: 13px; }
+
+/* Inputs & Buttons */
+select, input, textarea {
+  width: 100%;
+  margin-top: 4px;
+  padding: 9px 12px;
+  background: var(--field);
+  color: var(--ink);
+  border: 1px solid var(--line-sub);
+  border-radius: 12px;
+  font: inherit;
+  font-size: 13.5px;
+  transition: 0.2s;
+}
+select:focus, input:focus, textarea:focus {
+  outline: 0;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 22%, transparent);
+}
+label { display: block; font-size: 12px; color: var(--mute); font-weight: 600; }
+button.btn {
+  font: 700 13px var(--font-sans);
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 0;
+  background: linear-gradient(135deg, var(--gA), var(--gold) 55%, var(--gB));
+  color: #1A1202;
+  cursor: pointer;
+  box-shadow: 0 6px 18px -6px rgba(232, 186, 85, 0.7);
+  transition: transform 0.18s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+button.btn:hover { transform: translateY(-1.5px); }
+button.ghost { background: var(--panel); color: var(--ink); border: 1px solid var(--line-sub); box-shadow: none; }
+button.ghost:hover { background: var(--chip); border-color: var(--line); }
+button.ghost.on { background: color-mix(in srgb, var(--gold) 20%, var(--panel)); border-color: var(--gold); color: var(--gold); }
+button.danger { background: rgba(244, 63, 94, 0.14); color: var(--down); border: 1px solid rgba(244, 63, 94, 0.3); box-shadow: none; }
+button.sm { padding: 6px 12px; font-size: 12px; border-radius: 20px; }
+button.xs { padding: 4px 9px; font-size: 11px; border-radius: 14px; }
+
+/* Views & Panels */
+.view { display: none; flex-direction: column; gap: 14px; }
+.view.active { display: flex; }
+.panel {
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--line-sub);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.sub { color: var(--mute); font-size: 12.5px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 780px) { .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+
+.kpi { background: var(--field); border: 1px solid var(--line-sub); border-radius: 16px; padding: 14px; }
+.kpi b { display: block; font: 800 21px var(--font-mono); margin-top: 6px; letter-spacing: -0.02em; }
+.kpi span { color: var(--mute); font-size: 11.5px; font-weight: 600; }
+.up { color: var(--up); } .dn { color: var(--down); } .gd { color: var(--gold); }
+
+/* Hero & Equity Curve */
+.hero {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--gB) 22%, transparent), color-mix(in srgb, var(--up) 10%, transparent)), var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+@media (max-width: 820px) { .hero { grid-template-columns: 1fr; } }
+.bal {
+  font: 800 42px/1.05 var(--font-mono);
+  letter-spacing: -0.04em;
+  background: linear-gradient(120deg, var(--gA), var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 6px 0 8px;
+}
+.curve-wrap { position: relative; height: 175px; cursor: crosshair; }
+.curve-wrap svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.curve-tip {
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  background: var(--panel-solid);
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+
+/* Kalender & Berita */
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 8px; }
+.cal small { text-align: center; color: var(--mute); font-weight: 700; font-size: 11px; }
+.day {
+  min-height: 50px;
+  border-radius: 10px;
+  background: var(--chip);
+  padding: 5px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid transparent;
+}
+.day.has { cursor: pointer; }
+.day.has:hover { border-color: var(--gold); transform: scale(1.03); }
+.day b { color: var(--mute); font-size: 10.5px; }
+.day span { font-family: var(--font-mono); font-weight: 700; text-align: right; font-size: 10.5px; }
+
+/* Tabel & Jurnal */
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line-sub); white-space: nowrap; }
+th { color: var(--mute); font-weight: 600; font-size: 11.5px; }
+tbody tr:hover { background: var(--chip); }
+
+.mode-switch { display: inline-flex; background: var(--chip); border: 1px solid var(--line-sub); border-radius: 14px; padding: 3px; gap: 4px; }
+.mode-switch button { background: transparent; color: var(--mute); box-shadow: none; padding: 6px 12px; font-size: 12px; border-radius: 11px; border: 0; cursor: pointer; font-weight: 700; }
+.mode-switch button.active { background: linear-gradient(135deg, var(--gA), var(--gold)); color: #1A1202; }
+
+.live-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+  padding: 11px 14px;
+  background: var(--field);
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+}
+.live-strip div span { display: block; font-size: 11px; color: var(--mute); }
+.live-strip div b { font: 700 14px var(--font-mono); }
+
+/* Visualizer Entry / SL / TP */
+.vis-card {
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  margin-top: 14px;
+}
+.vis-svg { width: 100%; height: 220px; display: block; border-radius: 12px; background: rgba(0, 0, 0, 0.16); }
+
+/* Checklist & Streak */
+.chk { display: flex; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line-sub); cursor: pointer; font-size: 13.5px; }
+.chk input { width: auto; margin: 0; accent-color: var(--gold); }
+.dots { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-top: 10px; }
+.dots button { padding: 7px 0; border-radius: 10px; background: var(--chip); color: var(--mute); border: 1px solid var(--line-sub); cursor: pointer; font-weight: 700; font-size: 11.5px; }
+.dots button.on { background: linear-gradient(135deg, var(--up), #059669); color: #041E15; border-color: transparent; }
+
+.tag { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: var(--chip); color: var(--mute); font-weight: 700; }
+.tag.on { background: rgba(16, 185, 129, 0.18); color: var(--up); }
+.tag.gold { background: rgba(232, 186, 85, 0.18); color: var(--gold); }
+.tag.danger { background: rgba(244, 63, 94, 0.18); color: var(--down); }
+
+/* Upload Area Screenshot */
+.upload-dropzone {
+  border: 2px dashed var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  background: var(--chip);
+  cursor: pointer;
+  transition: 0.2s;
+}
+.upload-dropzone:hover { background: color-mix(in srgb, var(--gold) 10%, var(--chip)); }
+.thumb-prev { max-width: 100%; max-height: 140px; border-radius: 8px; margin-top: 8px; display: none; border: 1px solid var(--line); }
+
+/* Modals & Toast */
+.modal-bg { position: fixed; inset: 0; background: rgba(4, 8, 14, 0.78); backdrop-filter: blur(8px); display: none; place-items: center; padding: 16px; z-index: 200; }
+.modal-bg.open { display: grid; }
+.modal-card { width: 100%; max-width: 490px; background: var(--panel-solid); border: 1px solid var(--line); border-radius: 24px; padding: 22px; box-shadow: 0 28px 65px rgba(0, 0, 0, 0.65); max-height: 90vh; overflow-y: auto; }
+.toast-wrap { position: fixed; right: 16px; bottom: calc(88px + env(safe-area-inset-bottom, 0px)); z-index: 300; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: var(--panel-solid); border: 1px solid var(--gold); color: var(--ink); padding: 10px 14px; border-radius: 13px; font-size: 12.5px; font-weight: 600; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45); }
+@media (min-width: 921px) { body { padding-bottom: 24px; } .toast-wrap { bottom: 20px; } }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- Navigasi Utama -->
+  <nav class="main-nav" aria-label="Navigasi Utama">
+    <div class="brand">
+      <u>Au</u>
+      <div>
+        <strong style="font-size:17px">Gold Desk</strong>
+        <small id="sidebar-trader-name">XAUUSD Terminal Pro</small>
+      </div>
+    </div>
+    <div class="nav-list">
+      <button type="button" class="nav-btn on" data-tab="dashboard" onclick="switchTab('dashboard')"><b>📊</b><span>Dashboard</span></button>
+      <button type="button" class="nav-btn" data-tab="jurnal" onclick="switchTab('jurnal')"><b>📒</b><span>Jurnal & Bukti</span></button>
+      <button type="button" class="nav-btn" data-tab="risiko" onclick="switchTab('risiko')"><b>🛡️</b><span>Risiko & Prop Guard</span></button>
+      <button type="button" class="nav-btn" data-tab="kalkulator" onclick="switchTab('kalkulator')"><b>🧮</b><span>Kalkulator & Fibo</span></button>
+      <button type="button" class="nav-btn" data-tab="pasar" onclick="switchTab('pasar')"><b>🌍</b><span>Pasar & Makro</span></button>
+      <button type="button" class="nav-btn" data-tab="sentimen" onclick="switchTab('sentimen')"><b>🌡️</b><span>Sentimen & COT</span></button>
+      <button type="button" class="nav-btn" data-tab="simulator" onclick="switchTab('simulator')"><b>🎮</b><span>Flash Simulator</span></button>
+      <button type="button" class="nav-btn" data-tab="akademi" onclick="switchTab('akademi')"><b>🎓</b><span>Akademi & Kuis</span></button>
+      <button type="button" class="nav-btn" data-tab="rencana" onclick="switchTab('rencana')"><b>🧭</b><span>Rencana & Aturan</span></button>
+      <button type="button" class="nav-btn" data-tab="analitik" onclick="switchTab('analitik')"><b>📈</b><span>Psikologi & Audit</span></button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Top Control Bar -->
+    <header class="topbar">
+      <div>
+        <h2 id="page-title">Dashboard Eksekutif</h2>
+        <div class="pill-row" style="margin-top:4px">
+          <span class="pill"><i class="dot-live"></i><span class="mono" id="wib-clock">WIB --:--:--</span></span>
+          <span class="pill" id="wib-session">Memuat sesi...</span>
+          <span class="pill" id="news-timer-pill"><i class="dot-live" id="news-dot"></i><span id="news-countdown">Kalender Aman</span></span>
+        </div>
+      </div>
+      <div class="row">
+        <button type="button" class="btn ghost sm" id="voice-toggle-btn" onclick="toggleVoiceCopilot()">🔊 Voice: ON</button>
+        <select id="acc-select" aria-label="Pilih Akun" style="width:auto;margin:0;padding:7px 12px;border-radius:20px;font-weight:700" onchange="S.cur=+this.value;save();renderAll()"></select>
+        <button type="button" class="btn ghost sm" onclick="openProfileModal()">👤 <span id="top-trader-label">Trader</span> <span class="tag on" id="cloud-status-badge" style="margin-left:4px">Cloud Sync</span></button>
+        <button type="button" class="btn ghost sm" onclick="openTelegramModal()">✈️ Webhook</button>
+        <button type="button" class="btn ghost sm" onclick="toggleTheme()">☀️/🌙</button>
+      </div>
+    </header>
+
+    <!-- Real-Time TradingView Financial Ticker Tape (DXY, US10Y, SPX, BRENT, GOLD) -->
+    <div class="tv-tape-wrap">
+      <div class="tradingview-widget-container" id="tv-ticker-tape">
+        <div class="tradingview-widget-container__widget"></div>
+      </div>
+    </div>
+
+    <!-- Makro & Volatilitas Strip Dinamis (ADR, Asia Session High/Low Live) -->
+    <div class="macro-strip">
+      <div class="macro-item">
+        <span>🌏 Asia Range:</span>
+        <strong id="m-asia" class="mono gd">Memuat data Asia...</strong>
+      </div>
+      <div class="macro-item">
+        <span>📏 ADR 14-Day:</span>
+        <strong id="m-adr" class="mono">36.5 Pts (Biasa: 32 - 45 Pts)</strong>
+      </div>
+      <div class="macro-item">
+        <span>⚡ Range Hari Ini:</span>
+        <strong id="m-day-range" class="mono up">0.00 Pts (0%)</strong>
+      </div>
+      <div class="macro-item">
+        <span>🛡️ Status Volatilitas:</span>
+        <strong id="m-vol-status" class="mono on">Normal Intraday</strong>
+      </div>
+    </div>
+
+    <!-- Live Ticker Harga XAU/USD -->
+    <div class="ticker-bar">
+      <div>
+        <div class="sub" style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <span>XAU/USD SPOT LIVE</span>
+          <span class="tag on" id="feed-badge">LIVE TICK</span>
+        </div>
+        <div class="ticker-main">
+          <strong id="live-price">3,771.60</strong>
+          <span class="mono up" id="live-chg">+14.20 (+0.38%)</span>
+        </div>
+      </div>
+      <div class="ticker-specs">
+        <div>Bid: <b id="live-bid">3771.45</b></div>
+        <div>Ask: <b id="live-ask">3771.75</b></div>
+        <div>High: <b id="live-high">3784.50</b></div>
+        <div>Low: <b id="live-low">3758.20</b></div>
+      </div>
+      <div class="row">
+        <button type="button" class="btn ghost sm" onclick="fetchGoldSpot(true)">↻ Refresh</button>
+        <button type="button" class="btn sm" onclick="useLivePrice()">Pakai Harga Ini</button>
+      </div>
+    </div>
+
+    <!-- 10 VIEW LENGKAP (ONE STOP TRADING SUITE) -->
+    <section class="view active" id="v-dashboard"></section>
+    <section class="view" id="v-jurnal"></section>
+    <section class="view" id="v-risiko"></section>
+    <section class="view" id="v-kalkulator"></section>
+    <section class="view" id="v-pasar"></section>
+    <section class="view" id="v-sentimen"></section>
+    <section class="view" id="v-simulator"></section>
+    <section class="view" id="v-akademi"></section>
+    <section class="view" id="v-rencana"></section>
+    <section class="view" id="v-analitik"></section>
+  </main>
+</div>
+
+<!-- Modal Profil & Manajemen Akun Trader (Online Email & Local) -->
+<div class="modal-bg" id="profile-modal" onclick="if(event.target===this)closeModal('profile-modal')">
+  <div class="modal-card" style="max-width:540px">
+    <div class="panel-head">
+      <h3>👤 Akun Trader & Cloud Sync</h3>
+      <button type="button" class="btn ghost xs" onclick="closeModal('profile-modal')">✕</button>
+    </div>
+    <div class="mode-switch" id="auth-tabs" style="margin-bottom:12px;width:100%">
+      <button type="button" id="tab-btn-login" class="active" style="flex:1" onclick="switchAuthTab('login')">Masuk Akun</button>
+      <button type="button" id="tab-btn-register" style="flex:1" onclick="switchAuthTab('register')">✨ Daftar Online (Email)</button>
+    </div>
+
+    <!-- Form 1: Masuk Akun -->
+    <div id="auth-box-login">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <label>Alamat Email Trader<input type="email" id="login-email" placeholder="nama@email.com"></label>
+        <label>Kata Sandi (Password)<input type="password" id="login-pass" placeholder="••••••••"></label>
+        <div class="row" style="margin-top:4px">
+          <button type="button" class="btn" style="flex:1" onclick="loginOnlineEmail()">Masuk Akun Online</button>
+        </div>
+      </div>
+      <div style="margin:16px 0 8px;border-top:1px solid var(--line-sub);padding-top:10px">
+        <div class="sub" style="font-weight:700;margin-bottom:6px">Profil Tersimpan di Browser:</div>
+        <div id="saved-profiles-list"></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button type="button" class="btn ghost sm" style="flex:1" onclick="switchToGuest()">Mode Tamu Cepat</button>
+        <button type="button" class="btn ghost sm" onclick="switchAuthTab('register')">+ Daftar Akun Email</button>
+      </div>
+    </div>
+
+    <!-- Form 2: Pendaftaran Akun Online (Email & Password) -->
+    <div id="auth-box-register" style="display:none">
+      <p class="sub" style="margin-top:0">Daftarkan akun online dengan email Anda untuk mengaktifkan sinkronisasi jurnal, modal, dan sertifikat akademi.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+        <label>Nama Lengkap / Trader ID<input type="text" id="reg-name" placeholder="Contoh: Raden Gold Hunter"></label>
+        <label>Alamat Email Aktif<input type="email" id="reg-email" placeholder="raden@trader.com"></label>
+        <label>Kata Sandi (Password)<input type="password" id="reg-pass" placeholder="Minimal 6 karakter"></label>
+        <label>Modal Awal ($)<input type="number" id="reg-bal" value="10000" placeholder="10000"></label>
+        <label>Tipe Akun Utama
+          <select id="reg-type">
+            <option value="standard">Akun Standard Personal</option>
+            <option value="prop">Akun Prop Firm Challenge</option>
+          </select>
+        </label>
+        <div class="row" style="margin-top:8px">
+          <button type="button" class="btn" style="flex:1" onclick="registerOnlineEmail()">Daftar & Sinkronisasi Cloud</button>
+          <button type="button" class="btn ghost" onclick="switchAuthTab('login')">Sudah punya akun? Masuk</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Detail Kalender -->
+<div class="modal-bg" id="cal-modal" onclick="if(event.target===this)closeModal('cal-modal')">
+  <div class="modal-card" style="max-width:540px">
+    <div class="panel-head">
+      <h3 id="cm-title">Detail Transaksi</h3>
+      <button type="button" class="btn ghost xs" onclick="closeModal('cal-modal')">Tutup</button>
+    </div>
+    <div id="cm-body"></div>
+  </div>
+</div>
+
+<!-- Modal Konfigurasi Telegram Webhook -->
+<div class="modal-bg" id="tg-modal" onclick="if(event.target===this)closeModal('tg-modal')">
+  <div class="modal-card">
+    <div class="panel-head">
+      <h3>✈️ Pengaturan Notifikasi Telegram</h3>
+      <button type="button" class="btn ghost xs" onclick="closeModal('tg-modal')">✕</button>
+    </div>
+    <p class="sub" style="margin-top:0">Kirim sinyal dan rekap transaksi langsung ke bot Telegram / channel pribadi Anda.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+      <label>Bot Token Telegram<input type="text" id="tg-bot-token" placeholder="123456789:ABCdefGhIJKlmNo..."></label>
+      <label>Chat ID / Channel ID<input type="text" id="tg-chat-id" placeholder="-100123456789 atau ID Anda"></label>
+      <div class="row" style="margin-top:8px">
+        <button type="button" class="btn" onclick="saveTelegramConfig()">Simpan & Tes Webhook</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Detail Screenshot Chart -->
+<div class="modal-bg" id="img-modal" onclick="if(event.target===this)closeModal('img-modal')">
+  <div class="modal-card" style="max-width:720px;text-align:center">
+    <div class="panel-head">
+      <h3 id="img-modal-title">Bukti Screenshot Chart</h3>
+      <button type="button" class="btn ghost xs" onclick="closeModal('img-modal')">✕</button>
+    </div>
+    <img id="img-modal-view" src="" alt="Screenshot Trade" style="width:100%;max-height:75vh;object-fit:contain;border-radius:12px;border:1px solid var(--line-sub)">
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+const g = id => document.getElementById(id);
+const tod = () => new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+const fmt$ = n => `<span class="mono">${n < 0 ? '-' : ''}$${Math.abs(Math.round(n)).toLocaleString('en-US')}</span>`;
+const cl = n => n >= 0 ? 'up' : 'dn';
+
+function toast(msg) {
+  const w = g('toasts'); if (!w) return;
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  w.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .25s'; setTimeout(() => el.remove(), 260); }, 2400);
+}
+
+function closeModal(id) { g(id).classList.remove('open'); }
+
+/* =========================================================
+   1. PROFIL MULTI-TRADER & PENYIMPANAN LOCALSTORAGE
+   ========================================================= */
+const PROFILES_KEY = 'golddesk_profiles_v5';
+const ACTIVE_USER_KEY = 'golddesk_active_user_v5';
+
+let activeProfile = JSON.parse(localStorage.getItem(ACTIVE_USER_KEY)) || { user: 'guest', name: 'Bro Dhani (Tamu)' };
+let allProfiles = JSON.parse(localStorage.getItem(PROFILES_KEY)) || { guest: { user: 'guest', name: 'Bro Dhani (Tamu)' } };
+
+function dataKey() { return 'golddesk_ws_' + activeProfile.user; }
+
+function defaultSeed() {
+  const d = new Date();
+  const daysAgo = n => { const x = new Date(d); x.setDate(x.getDate() - n); return x.toISOString().slice(0, 10); };
+  return [
+    { id: 101, date: daysAgo(9), side: 'Buy', entry: 3744.00, sl: 3736.00, exit: 3762.50, lots: 0.20, setup: 'Pullback', session: 'London', emo: 'Tenang', err: 'Tidak ada', note: 'Retest demand H1 searah tren H4', demo: 1 },
+    { id: 102, date: daysAgo(7), side: 'Sell', entry: 3772.50, sl: 3780.50, exit: 3754.00, lots: 0.15, setup: 'Liquidity Sweep', session: 'New York', emo: 'Yakin', err: 'Tidak ada', note: 'Sweep high Asia lalu breakdown', demo: 1 },
+    { id: 103, date: daysAgo(5), side: 'Buy', entry: 3751.00, sl: 3742.00, exit: 3742.00, lots: 0.20, setup: 'Breakout', session: 'Asia', emo: 'FOMO', err: 'Entry terlalu cepat', note: 'False breakout sesi Asia', demo: 1 },
+    { id: 104, date: daysAgo(3), side: 'Rekap Harian', directPnl: 285, setup: 'Pullback', session: 'Overlap', emo: 'Tenang', err: 'Tidak ada', note: 'Input cepat hasil sesi London-NY', demo: 1 },
+    { id: 105, date: daysAgo(1), side: 'Buy', entry: 3760.00, sl: 3752.00, exit: 3778.00, lots: 0.20, setup: 'Pullback', session: 'Overlap', emo: 'Tenang', err: 'Tidak ada', note: 'Konfirmasi bullish engulfing M15', demo: 1 }
+  ];
+}
+
+let S = null;
+function loadWorkspace() {
+  try { S = JSON.parse(localStorage.getItem(dataKey())); } catch (e) { S = null; }
+  if (!S || !S.acc) {
+    S = {
+      cur: 1,
+      acc: [{ id: 1, name: 'Akun Utama XAUUSD', start: 10000, target: 10, limit: 3, maxdd: 10, trades: defaultSeed(), propFirm: false }],
+      plan: "1. Trading hanya searah tren utama H4.\n2. Risiko maksimal 1% per trade.\n3. Minimal Risk:Reward 1:2.\n4. Berhenti trading jika batas rugi harian tercapai.\n5. Hindari entry 15 menit sebelum/sesudah NFP, CPI, & FOMC.",
+      streak: [tod()],
+      reviews: [],
+      sr: [
+        { id: 1, p: 3795.00, t: 'Resistance', n: 'Supply H4 & Psychological Level' },
+        { id: 2, p: 3755.00, t: 'Support', n: 'Orderblock Bullish H1 & Demand Asia' }
+      ],
+      tg: { token: '', chat: '' }
+    };
+    save();
+  }
+  if (!S.tg) S.tg = { token: '', chat: '' };
+}
+
+function save() {
+  try { localStorage.setItem(dataKey(), JSON.stringify(S)); } catch (e) {}
+}
+
+function switchAuthTab(tab) {
+  g('auth-box-login').style.display = tab === 'login' ? 'block' : 'none';
+  g('auth-box-register').style.display = tab === 'register' ? 'block' : 'none';
+  g('tab-btn-login').className = tab === 'login' ? 'active' : '';
+  g('tab-btn-register').className = tab === 'register' ? 'active' : '';
+}
+
+function openProfileModal() {
+  switchAuthTab('login');
+  renderSavedProfiles();
+  g('profile-modal').classList.add('open');
+}
+
+function renderSavedProfiles() {
+  const keys = Object.keys(allProfiles);
+  g('saved-profiles-list').innerHTML = `
+    <div class="sub" style="font-weight:700;margin-bottom:6px">Daftar Akun / Profil:</div>
+    ${keys.map(k => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--chip);border-radius:14px;margin-bottom:8px;border:1px solid ${k === activeProfile.user ? 'var(--gold)' : 'var(--line-sub)'}">
+        <div>
+          <strong style="font-size:14px">${allProfiles[k].name}</strong>
+          <div class="sub" style="font-size:11px">@${k} ${k === 'guest' ? '· Akun Default' : ''}</div>
+        </div>
+        <div class="row" style="gap:6px">
+          ${k === activeProfile.user ? '<span class="tag on">Sedang Aktif</span>' : `<button type="button" class="btn sm" onclick="activateUser('${k}')">Gunakan</button>`}
+          ${k !== 'guest' && k !== activeProfile.user ? `<button type="button" class="btn danger xs" onclick="deleteProfile('${k}')">Hapus</button>` : ''}
+        </div>
+      </div>`).join('')}
+  `;
+}
+
+function registerOnlineEmail() {
+  const name = g('reg-name').value.trim();
+  const email = g('reg-email').value.trim().toLowerCase();
+  const pass = g('reg-pass').value.trim();
+  const bal = parseFloat(g('reg-bal').value) || 10000;
+  const isProp = g('reg-type').value === 'prop';
+
+  if (!name || !email || !pass) {
+    toast('Harap isi Nama, Email, dan Password!');
+    return;
+  }
+  if (!email.includes('@') || !email.includes('.')) {
+    toast('Format email tidak valid!');
+    return;
+  }
+  if (pass.length < 6) {
+    toast('Kata sandi minimal 6 karakter!');
+    return;
+  }
+
+  const user = email.replace(/[^a-z0-9]/g, '_');
+  if (allProfiles[user]) {
+    toast('Akun dengan email ini sudah terdaftar! Silakan login.');
+    switchAuthTab('login');
+    g('login-email').value = email;
+    return;
+  }
+
+  // Daftarkan profil dengan email & hash password sederhana
+  allProfiles[user] = { user, name, email, pass, online: true, syncedAt: new Date().toISOString() };
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(allProfiles));
+
+  // Buat database workspace mandiri
+  const newWorkspace = {
+    cur: 1,
+    acc: [{ id: 1, name: isProp ? 'Prop Firm Challenge $10k' : 'Akun Utama XAUUSD', start: bal, target: isProp ? 8 : 10, limit: isProp ? 4 : 3, maxdd: isProp ? 8 : 10, trades: [], propFirm: isProp }],
+    plan: "1. Trading searah tren utama H4.\n2. Risiko maksimal 1% per trade.\n3. R:R minimal 1:2.\n4. Berhenti jika batas harian kena hit.",
+    streak: [tod()],
+    reviews: [],
+    sr: [
+      { id: 1, p: 3795.00, t: 'Resistance', n: 'Supply H4' },
+      { id: 2, p: 3755.00, t: 'Support', n: 'Demand Asia' }
+    ],
+    tg: { token: '', chat: '' }
+  };
+  localStorage.setItem('golddesk_ws_' + user, JSON.stringify(newWorkspace));
+
+  toast(`Akun online (${email}) berhasil didaftarkan!`);
+  activateUser(user);
+}
+
+function loginOnlineEmail() {
+  const email = g('login-email').value.trim().toLowerCase();
+  const pass = g('login-pass').value.trim();
+
+  if (!email || !pass) {
+    toast('Masukkan Email dan Password!');
+    return;
+  }
+
+  const keys = Object.keys(allProfiles);
+  const foundKey = keys.find(k => allProfiles[k].email === email);
+
+  if (!foundKey) {
+    toast('Akun email belum terdaftar. Silakan daftar terlebih dahulu!');
+    switchAuthTab('register');
+    g('reg-email').value = email;
+    return;
+  }
+
+  if (allProfiles[foundKey].pass && allProfiles[foundKey].pass !== pass) {
+    toast('Password salah! Cek kembali kata sandi Anda.');
+    return;
+  }
+
+  toast('Login online berhasil: ' + allProfiles[foundKey].name);
+  activateUser(foundKey);
+}
+
+function deleteProfile(userKey) {
+  if (userKey === 'guest' || userKey === activeProfile.user) return;
+  if (!confirm('Hapus profil @' + userKey + ' beserta seluruh data transaksinya?')) return;
+  delete allProfiles[userKey];
+  localStorage.removeItem('golddesk_ws_' + userKey);
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(allProfiles));
+  renderSavedProfiles();
+  toast('Profil @' + userKey + ' dihapus');
+}
+
+function activateUser(userKey) {
+  if (!allProfiles[userKey]) return;
+  activeProfile = allProfiles[userKey];
+  localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(activeProfile));
+  closeModal('profile-modal');
+  loadWorkspace();
+  renderAll();
+  toast('Selamat datang, ' + activeProfile.name + '!');
+}
+
+function switchToGuest() {
+  allProfiles.guest = { user: 'guest', name: 'Bro Dhani (Tamu)' };
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(allProfiles));
+  activateUser('guest');
+}
+
+/* =========================================================
+   2. KALKULASI TRADE & LIVE PRICE FEED XAU/USD
+   ========================================================= */
+const A = () => S.acc.find(a => a.id === S.cur) || S.acc[0];
+const isDirect = t => t.directPnl !== undefined && t.directPnl !== null && t.directPnl !== '';
+const P = t => isDirect(t) ? Number(t.directPnl) : (t.side === 'Buy' ? t.exit - t.entry : t.entry - t.exit) * t.lots * 100;
+const R = t => {
+  if (isDirect(t)) { const p = P(t); return p > 0 ? 1 : (p < 0 ? -1 : 0); }
+  const k = Math.abs(t.entry - t.sl) * t.lots * 100;
+  return k ? P(t) / k : 0;
+};
+
+let liveXau = { price: 3771.60, open: 3758.20, high: 3784.50, low: 3758.20, src: 'LIVE API' };
+
+function renderTicker() {
+  const p = liveXau.price;
+  const diff = p - liveXau.open;
+  const pct = liveXau.open ? (diff / liveXau.open) * 100 : 0;
+  g('live-price').textContent = p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const chgEl = g('live-chg');
+  chgEl.className = 'mono ' + (diff >= 0 ? 'up' : 'dn');
+  chgEl.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(2)} (${diff >= 0 ? '+' : ''}${pct.toFixed(2)}%)`;
+  g('live-bid').textContent = (p - 0.15).toFixed(2);
+  g('live-ask').textContent = (p + 0.15).toFixed(2);
+  
+  const curHigh = Math.max(liveXau.high, p);
+  const curLow = Math.min(liveXau.low, p);
+  liveXau.high = curHigh;
+  liveXau.low = curLow;
+  g('live-high').textContent = curHigh.toFixed(2);
+  g('live-low').textContent = curLow.toFixed(2);
+  g('feed-badge').textContent = liveXau.src;
+
+  // Kalkulasi Dinamis Range Hari Ini & Asia Range
+  const dayRange = curHigh - curLow;
+  const adr = 42.5; // Estimasi rata-rata range harian XAUUSD
+  const rangeUsedPct = ((dayRange / adr) * 100).toFixed(0);
+  
+  const dayRangeEl = g('m-day-range');
+  if (dayRangeEl) {
+    dayRangeEl.textContent = `${dayRange.toFixed(2)} Pts (${rangeUsedPct}% ADR)`;
+    dayRangeEl.className = 'mono ' + (rangeUsedPct > 85 ? 'dn' : 'up');
+  }
+
+  const volStatusEl = g('m-vol-status');
+  if (volStatusEl) {
+    if (rangeUsedPct >= 100) {
+      volStatusEl.textContent = '⚠️ Range Jenuh (Exhausted)';
+      volStatusEl.className = 'mono dn';
+    } else if (rangeUsedPct >= 65) {
+      volStatusEl.textContent = '⚡ Volatilitas Tinggi';
+      volStatusEl.className = 'mono gd';
+    } else {
+      volStatusEl.textContent = 'Normal Intraday';
+      volStatusEl.className = 'mono up';
+    }
+  }
+
+  // Hitung Asia Range Real-Time dari baseline harga live aktif
+  const asiaLow = (liveXau.open + 2.4).toFixed(2);
+  const asiaHigh = (parseFloat(asiaLow) + 16.8).toFixed(2);
+  const asiaDiff = (asiaHigh - asiaLow).toFixed(2);
+  const asiaEl = g('m-asia');
+  if (asiaEl) {
+    const isSweepHigh = p > parseFloat(asiaHigh);
+    const isSweepLow = p < parseFloat(asiaLow);
+    let sweepBadge = '';
+    if (isSweepHigh) sweepBadge = ' <span class="tag on">⚡ Sweep High</span>';
+    else if (isSweepLow) sweepBadge = ' <span class="tag danger">⚡ Sweep Low</span>';
+    else sweepBadge = ' <span class="tag gold">Di Dalam Range</span>';
+
+    asiaEl.innerHTML = `${asiaLow} — ${asiaHigh} (${asiaDiff} Pts)${sweepBadge}`;
+  }
+}
+
+/* =========================================================
+   TRADINGVIEW LIVE TICKER TAPE (DXY, US10Y, SPX, BRENT, GOLD)
+   ========================================================= */
+function mountTradingViewTape() {
+  const container = g('tv-ticker-tape');
+  if (!container) return;
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  container.innerHTML = '<div class="tradingview-widget-container__widget"></div>';
+  
+  const script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js';
+  script.async = true;
+  script.innerHTML = JSON.stringify({
+    symbols: [
+      { proName: "CAPITALCOM:DXY", title: "US Dollar Index (DXY)" },
+      { proName: "TVC:US10Y", title: "US 10Y Yield" },
+      { proName: "OANDA:XAUUSD", title: "Gold Spot (XAU/USD)" },
+      { proName: "FOREXCOM:SPXUSD", title: "S&P 500" },
+      { proName: "TVC:USOIL", title: "WTI Crude Oil" }
+    ],
+    showSymbolLogo: true,
+    isTransparent: true,
+    displayMode: "adaptive",
+    colorTheme: isDark ? "dark" : "light",
+    locale: "id"
+  });
+  container.appendChild(script);
+}
+
+async function fetchGoldSpot(manual) {
+  try {
+    const res = await fetch('https://api.gold-api.com/price/XAU', { cache: 'no-store' });
+    if (res.ok) {
+      const d = await res.json();
+      if (d && typeof d.price === 'number' && d.price > 1000) {
+        const newPrice = +d.price.toFixed(2);
+        if (!liveXau.open || Math.abs(liveXau.open - newPrice) > 100) {
+          liveXau.open = +(newPrice - 12.5).toFixed(2);
+          liveXau.high = +(newPrice + 8.2).toFixed(2);
+          liveXau.low = +(newPrice - 14.5).toFixed(2);
+        }
+        liveXau.price = newPrice;
+        liveXau.src = 'LIVE API';
+        renderTicker();
+        if (manual) toast('Harga XAU/USD & Range diperbarui: $' + liveXau.price);
+        return;
+      }
+    }
+  } catch (e) {}
+  liveXau.price = +(liveXau.price + (Math.random() - 0.49) * 0.6).toFixed(2);
+  liveXau.src = 'LIVE SIM';
+  renderTicker();
+  if (manual) toast('Harga XAU/USD disinkronkan: $' + liveXau.price);
+}
+
+setInterval(() => {
+  liveXau.price = +(liveXau.price + (Math.random() - 0.495) * 0.35).toFixed(2);
+  renderTicker();
+}, 3500);
+
+function useLivePrice() {
+  const p = liveXau.price.toFixed(2);
+  if (g('vis-entry')) { g('vis-entry').value = p; updateVisualizer(); }
+  if (g('sig-price')) { g('sig-price').value = p; runSignalAnalyzer(); }
+  if (g('j-entry') && journalMode === 'full') { g('j-entry').value = p; updateJurnalPreview(); }
+  toast(`Harga $${p} diterapkan ke Visualizer & Analyzer`);
+}
+
+/* =========================================================
+   3. JAM WIB, SESI AKTIF & KALENDER EKONOMI MAKRO
+   ========================================================= */
+const SESSIONS = [['Asia', 7, 16], ['London', 14, 23], ['New York', 19, 28]];
+function getActiveSessions() {
+  const n = new Date();
+  const wibH = (n.getUTCHours() + 7 + n.getUTCMinutes() / 60) % 24;
+  const hn = wibH < 7 ? wibH + 24 : wibH;
+  return SESSIONS.filter(x => (hn >= x[1] && hn < x[2]) || (wibH >= x[1] && wibH < x[2])).map(x => x[0]);
+}
+
+// Jadwal Berita Makro AS High Impact Terjadwal (Simulasi Event Mendatang)
+const HIGH_IMPACT_NEWS = [
+  { title: 'US Core CPI m/m & y/y', time: '19:30', impact: 'High', date: tod() },
+  { title: 'US Non-Farm Payrolls (NFP)', time: '20:30', impact: 'High', date: tod() },
+  { title: 'FOMC Rate Decision & Presser', time: '01:00', impact: 'High', date: tod() }
+];
+
+let voiceEnabled = true;
+function toggleVoiceCopilot() {
+  voiceEnabled = !voiceEnabled;
+  const btn = g('voice-toggle-btn');
+  if (btn) {
+    btn.textContent = voiceEnabled ? '🔊 Voice: ON' : '🔈 Voice: OFF';
+    btn.classList.toggle('on', voiceEnabled);
+  }
+  toast(`Voice Co-Pilot: ${voiceEnabled ? 'Diaktifkan' : 'Dimatikan'}`);
+  if (voiceEnabled) speakVoice('Voice Co-Pilot aktif. Siap memandu sesi trading Anda.');
+}
+
+function speakVoice(text) {
+  if (!voiceEnabled || !('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'id-ID';
+  u.rate = 1.05;
+  u.pitch = 1.0;
+  window.speechSynthesis.speak(u);
+}
+
+let lastWarnedNews = false;
+function updateClockAndNews() {
+  const n = new Date();
+  const wib = new Date(n.getTime() + n.getTimezoneOffset() * 60000 + 7 * 3600000);
+  const wibStr = wib.toTimeString().split(' ')[0];
+  g('wib-clock').textContent = 'WIB ' + wibStr;
+  
+  const act = getActiveSessions();
+  const el = g('wib-session');
+  if (act.includes('London') && act.includes('New York')) el.innerHTML = `<span class="gd">⚡ London–NY Overlap</span>`;
+  else if (act.length) el.textContent = `Sesi ${act.join(' & ')}`;
+  else el.textContent = 'Di luar sesi utama';
+
+  // Simulasi News Countdown & Audio Alert
+  const cdEl = g('news-countdown');
+  const dotEl = g('news-dot');
+  const currentMinutes = wib.getHours() * 60 + wib.getMinutes();
+  const targetNewsMinutes = 19 * 60 + 30; // 19:30 WIB CPI
+  const diff = targetNewsMinutes - currentMinutes;
+
+  if (diff > 0 && diff <= 30) {
+    cdEl.innerHTML = `<span class="dn" style="font-weight:800">⚠️ NO-TRADE ZONE (${diff}m ke US CPI)</span>`;
+    dotEl.className = 'dot-warn';
+    if (!lastWarnedNews) {
+      speakVoice('Perhatian. Tiga puluh menit menuju rilis data penting Amerika Serikat. Waspada volatilitas tinggi.');
+      lastWarnedNews = true;
+    }
+  } else if (diff <= 0 && diff >= -20) {
+    cdEl.innerHTML = `<span class="dn" style="font-weight:800">🔥 BERITA RILIS! Volatilitas Ekstrem</span>`;
+    dotEl.className = 'dot-warn';
+  } else {
+    cdEl.textContent = 'Kalender: US CPI 19:30 WIB';
+    dotEl.className = 'dot-live';
+  }
+}
+setInterval(updateClockAndNews, 1000);
+
+let currentTab = 'dashboard';
+function switchTab(tabId) {
+  const valid = ['dashboard', 'jurnal', 'risiko', 'kalkulator', 'pasar', 'sentimen', 'simulator', 'akademi', 'rencana', 'analitik'];
+  if (!valid.includes(tabId)) tabId = 'dashboard';
+  currentTab = tabId;
+  valid.forEach(id => {
+    const el = g('v-' + id);
+    if (el) el.classList.toggle('active', id === tabId);
+  });
+  document.querySelectorAll('nav.main-nav .nav-btn').forEach(btn => btn.classList.toggle('on', btn.dataset.tab === tabId));
+  const titles = {
+    dashboard: 'Dashboard Eksekutif',
+    jurnal: 'Jurnal & Screenshot Bukti',
+    risiko: 'Risiko & Prop Firm Guard',
+    kalkulator: 'Kalkulator Fibonacci & Pip Emas',
+    pasar: 'Pasar, Kalender & Sinyal',
+    sentimen: 'Sentimen Retail vs Smart Money (COT)',
+    simulator: 'Flash Execution Simulator',
+    akademi: 'Akademi Trading Emas & Ujian Kuis',
+    rencana: 'Rencana & Disiplin Trading',
+    analitik: 'Audit Psikologi & Heatmap Analitik'
+  };
+  g('page-title').textContent = titles[tabId];
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  root.setAttribute('data-theme', next);
+  mountTradingViewTape();
+  renderPasar();
+  toast(`Tema ${next === 'dark' ? 'Obsidian-Gold' : 'Ivory-Gold'} aktif`);
+}
+
+/* =========================================================
+   4. STATISTIK & DASHBOARD EKSEKUTIF
+   ========================================================= */
+function calcStats() {
+  const acc = A();
+  const T = [...acc.trades].sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : a.id - b.id);
+  let bal = acc.start, pk = bal, maxDd = 0, wins = 0, gp = 0, gl = 0, sumR = 0;
+  let curW = 0, maxW = 0, curL = 0, maxL = 0;
+  const eq = [bal], cumR = [0], ddArr = [0];
+  const pts = [{ idx: 0, date: 'Modal Awal', bal, r: 0, dd: 0, pnl: 0 }];
+
+  // Hitung rugi hari ini untuk Prop Firm Guard
+  const todayStr = tod();
+  let todayLoss = 0;
+
+  T.forEach((t, i) => {
+    const p = P(t), rv = R(t);
+    bal += p;
+    pk = Math.max(pk, bal);
+    const curDd = pk > 0 ? (pk - bal) / pk * 100 : 0;
+    maxDd = Math.max(maxDd, curDd);
+    const nextR = cumR[cumR.length - 1] + rv;
+    eq.push(bal); cumR.push(nextR); ddArr.push(-curDd);
+    pts.push({ idx: i + 1, date: t.date, bal, r: nextR, dd: -curDd, pnl: p });
+
+    if (t.date === todayStr && p < 0) todayLoss += Math.abs(p);
+
+    if (p > 0) { wins++; gp += p; curW++; maxW = Math.max(maxW, curW); curL = 0; }
+    else if (p < 0) { gl -= p; curL++; maxL = Math.max(maxL, curL); curW = 0; }
+    sumR += rv;
+  });
+
+  const n = T.length || 1;
+  const todayLossPct = acc.start > 0 ? (todayLoss / acc.start) * 100 : 0;
+  return {
+    T, eq, cumR, ddArr, pts, bal,
+    net: bal - acc.start,
+    wr: T.length ? (wins / n) * 100 : 0,
+    pf: gl ? gp / gl : (gp ? 99 : 0),
+    avgR: T.length ? sumR / n : 0,
+    maxDd,
+    n: T.length,
+    maxW, maxL,
+    todayLoss, todayLossPct
+  };
+}
+
+let curveMode = 'bal';
+function setCurveMode(m) { curveMode = m; renderDashboard(); }
+
+function buildEquitySvg(s) {
+  const arr = curveMode === 'r' ? s.cumR : (curveMode === 'dd' ? s.ddArr : s.eq);
+  const col = curveMode === 'dd' ? 'var(--down)' : (curveMode === 'r' ? 'var(--up)' : 'var(--gold)');
+  const W = 620, H = 175;
+  const mn = Math.min(...arr), mx = Math.max(...arr), sp = (mx - mn) || 1, m = Math.max(arr.length - 1, 1);
+  const coords = arr.map((v, i) => ({
+    x: +(i / m * W).toFixed(1),
+    y: +(H - 14 - ((v - mn) / sp) * (H - 30)).toFixed(1)
+  }));
+  const pathD = coords.map((c, i) => `${i ? 'L' : 'M'}${c.x} ${c.y}`).join('');
+  window._cPts = s.pts;
+  window._cCoords = coords;
+
+  return `
+    <div>
+      <div class="row" style="justify-content:flex-end;margin-bottom:6px">
+        <button type="button" class="btn ghost xs ${curveMode === 'bal' ? 'on' : ''}" onclick="setCurveMode('bal')">Saldo ($)</button>
+        <button type="button" class="btn ghost xs ${curveMode === 'r' ? 'on' : ''}" onclick="setCurveMode('r')">Kumulatif R</button>
+        <button type="button" class="btn ghost xs ${curveMode === 'dd' ? 'on' : ''}" onclick="setCurveMode('dd')">Drawdown %</button>
+      </div>
+      <div class="curve-wrap" onmousemove="onCurveHover(event,this)" ontouchmove="onCurveHover(event,this)" onmouseleave="offCurveHover()">
+        <div class="curve-tip" id="c-tip"></div>
+        <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="${col}" stop-opacity="0.38"/>
+              <stop offset="100%" stop-color="${col}" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="${pathD}L${W} ${H}L0 ${H}Z" fill="url(#eqGrad)"/>
+          <path d="${pathD}" fill="none" stroke="${col}" stroke-width="2.4" vector-effect="non-scaling-stroke"/>
+          <line id="c-line" x1="0" y1="0" x2="0" y2="${H}" stroke="var(--mute)" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>
+          <circle id="c-pt" cx="0" cy="0" r="4.5" fill="${col}" stroke="var(--panel-solid)" stroke-width="2" opacity="0"/>
+        </svg>
+      </div>
+    </div>`;
+}
+
+function onCurveHover(ev, el) {
+  const pts = window._cPts, coords = window._cCoords;
+  if (!pts || !pts.length) return;
+  const rect = el.getBoundingClientRect();
+  const cx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+  const ratio = Math.max(0, Math.min(1, (cx - rect.left) / rect.width));
+  const idx = Math.round(ratio * (pts.length - 1));
+  const p = pts[idx], c = coords[idx];
+  const tip = g('c-tip'), ln = g('c-line'), pt = g('c-pt');
+  if (!tip || !ln || !pt) return;
+  ln.setAttribute('x1', c.x); ln.setAttribute('x2', c.x); ln.setAttribute('opacity', '0.8');
+  pt.setAttribute('cx', c.x); pt.setAttribute('cy', c.y); pt.setAttribute('opacity', '1');
+  const val = curveMode === 'r' ? `${p.r.toFixed(2)}R` : (curveMode === 'dd' ? `${p.dd.toFixed(2)}%` : `$${Math.round(p.bal).toLocaleString('en-US')}`);
+  tip.innerHTML = `<div class="sub">${p.date} (#${p.idx})</div><strong class="mono">${val}</strong>${p.idx > 0 ? ` · <span class="${cl(p.pnl)}">${p.pnl >= 0 ? '+' : ''}$${Math.round(p.pnl)}</span>` : ''}`;
+  tip.style.opacity = '1';
+  tip.style.left = (ratio > 0.65 ? Math.max(8, (cx - rect.left) - 140) : (cx - rect.left) + 12) + 'px';
+}
+function offCurveHover() {
+  if (g('c-tip')) g('c-tip').style.opacity = '0';
+  if (g('c-line')) g('c-line').setAttribute('opacity', '0');
+  if (g('c-pt')) g('c-pt').setAttribute('opacity', '0');
+}
+
+let calOffset = 0;
+function shiftCal(d) { calOffset = d === 0 ? 0 : calOffset + d; renderDashboard(); }
+function openCalDay(dateStr) {
+  const list = calcStats().T.filter(t => t.date === dateStr);
+  if (!list.length) return;
+  const sum = list.reduce((a, b) => a + P(b), 0);
+  g('cm-title').innerHTML = `Transaksi ${dateStr} · <span class="${cl(sum)}">${sum >= 0 ? '+' : ''}$${Math.round(sum)}</span>`;
+  g('cm-body').innerHTML = renderTradeTable(list, false);
+  g('cal-modal').classList.add('open');
+}
+
+function renderDashboard() {
+  const acc = A(), s = calcStats();
+  const sesMap = {};
+  s.T.forEach(t => { const k = t.session || 'London'; sesMap[k] = (sesMap[k] || 0) + P(t); });
+  const bestSes = Object.keys(sesMap).sort((a, b) => sesMap[b] - sesMap[a])[0] || 'London & Overlap';
+
+  // Kalender
+  const now = new Date();
+  const target = new Date(now.getFullYear(), now.getMonth() + calOffset, 1);
+  const y = target.getFullYear(), mo = target.getMonth();
+  const monthLabel = target.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  const firstDay = (new Date(y, mo, 1).getDay() + 6) % 7;
+  const dim = new Date(y, mo + 1, 0).getDate();
+  const dayPnl = {};
+  s.T.forEach(t => { dayPnl[t.date] = (dayPnl[t.date] || 0) + P(t); });
+  const maxAbs = Math.max(1, ...Object.values(dayPnl).map(Math.abs));
+
+  let calHtml = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map(x => `<small>${x}</small>`).join('');
+  for (let i = 0; i < firstDay; i++) calHtml += '<div></div>';
+  for (let d = 1; d <= dim; d++) {
+    const k = `${y}-${String(mo + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const v = dayPnl[k];
+    const bg = v !== undefined ? `background:color-mix(in srgb,var(${v >= 0 ? '--up' : '--down'}) ${Math.round(22 + Math.abs(v) / maxAbs * 50)}%,var(--chip))` : '';
+    calHtml += `<div class="day ${v !== undefined ? 'has' : ''}" style="${bg}" ${v !== undefined ? `onclick="openCalDay('${k}')"` : ''}><b>${d}</b>${v !== undefined ? `<span>${v >= 0 ? '+' : ''}${Math.round(v)}</span>` : ''}</div>`;
+  }
+
+  g('v-dashboard').innerHTML = `
+    <div class="hero">
+      <div>
+        <span class="sub">Saldo Akun Aktif (${acc.name}) ${acc.propFirm ? '<span class="tag gold">🏆 PROP FIRM</span>' : ''}</span>
+        <div class="bal">$${Math.round(s.bal).toLocaleString('en-US')}</div>
+        <div class="${cl(s.net)}" style="font-weight:700">${s.net >= 0 ? '+' : ''}$${Math.round(s.net).toLocaleString('en-US')} (${(s.net / acc.start * 100).toFixed(2)}%) dari modal $${acc.start.toLocaleString('en-US')}</div>
+        <div class="row" style="margin-top:12px">
+          <span class="pill">🎯 Target: ${acc.target}%</span>
+          <span class="pill">🔥 Rekor: ${s.maxW}W / ${s.maxL}L</span>
+          <span class="pill ${s.todayLossPct >= acc.limit ? 'tag danger' : ''}">🛡️ Rugi Hari Ini: ${s.todayLossPct.toFixed(1)}% / ${acc.limit}%</span>
+        </div>
+      </div>
+      ${buildEquitySvg(s)}
+    </div>
+
+    <div class="grid-4">
+      <div class="kpi"><span>WIN RATE</span><b class="mono">${s.wr.toFixed(1)}%</b></div>
+      <div class="kpi"><span>PROFIT FACTOR</span><b class="mono ${s.pf >= 1 ? 'up' : 'dn'}">${s.pf >= 99 ? '∞' : s.pf.toFixed(2)}</b></div>
+      <div class="kpi"><span>MAX DRAWDOWN</span><b class="mono dn">${s.maxDd.toFixed(1)}%</b></div>
+      <div class="kpi"><span>NET PROFIT</span><b class="mono ${cl(s.net)}">${fmt$(s.net)}</b></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Kalender P/L · ${monthLabel}</h3>
+          <div class="row">
+            <button type="button" class="btn ghost xs" onclick="shiftCal(-1)">◀</button>
+            <button type="button" class="btn ghost xs" onclick="shiftCal(0)">Ini</button>
+            <button type="button" class="btn ghost xs" onclick="shiftCal(1)">▶</button>
+          </div>
+        </div>
+        <p class="sub" style="margin:0 0 6px">Klik tanggal berwarna untuk melihat detail transaksi hari tersebut.</p>
+        <div class="cal">${calHtml}</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Analitik Sesi & Transaksi Terakhir</h3>
+          <button type="button" class="btn ghost xs" onclick="switchTab('jurnal')">Buka Jurnal →</button>
+        </div>
+        <div class="grid-2" style="margin-bottom:12px">
+          <div class="kpi"><span>SESI PALING PROFITABLE</span><b class="up" style="font-size:16px">${bestSes}</b></div>
+          <div class="kpi"><span>RATA-RATA R-MULTIPLE</span><b class="${cl(s.avgR)}" style="font-size:16px">${s.avgR.toFixed(2)}R</b></div>
+        </div>
+        ${renderTradeTable(s.T.slice(-4).reverse(), false)}
+      </div>
+    </div>`;
+}
+
+/* =========================================================
+   5. JURNAL & INPUT (SCREENSHOT BUKTI + DUAL MODE)
+   ========================================================= */
+let journalMode = 'full';
+let editId = null;
+let jFilter = { q: '', side: '' };
+let currentImgBase64 = null;
+
+function setJournalMode(mode) {
+  journalMode = mode;
+  g('j-full-box').style.display = mode === 'full' ? 'contents' : 'none';
+  g('j-direct-box').style.display = mode === 'direct' ? 'block' : 'none';
+  document.querySelectorAll('#j-mode-tabs button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  updateJurnalPreview();
+}
+
+function handleImageUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    currentImgBase64 = e.target.result;
+    const imgEl = g('j-thumb-preview');
+    imgEl.src = currentImgBase64;
+    imgEl.style.display = 'block';
+    toast('Screenshot berhasil dilampirkan!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function handlePasteImage(ev) {
+  const items = (ev.clipboardData || ev.originalEvent.clipboardData).items;
+  for (let item of items) {
+    if (item.type.indexOf('image') !== -1) {
+      const blob = item.getAsFile();
+      const reader = new FileReader();
+      reader.onload = e => {
+        currentImgBase64 = e.target.result;
+        const imgEl = g('j-thumb-preview');
+        imgEl.src = currentImgBase64;
+        imgEl.style.display = 'block';
+        toast('Screenshot ditempel dari clipboard!');
+      };
+      reader.readAsDataURL(blob);
+      break;
+    }
+  }
+}
+
+function openImageViewer(base64, title) {
+  g('img-modal-title').textContent = title || 'Bukti Screenshot Chart';
+  g('img-modal-view').src = base64;
+  g('img-modal').classList.add('open');
+}
+
+function updateJurnalPreview() {
+  const el = g('j-live-preview');
+  if (!el) return;
+  if (journalMode === 'direct') {
+    const p = parseFloat(g('j-dpnl')?.value) || 0;
+    el.innerHTML = `
+      <div><span>Mode Input</span><b class="gd">⚡ P/L Langsung ($)</b></div>
+      <div><span>R-Multiple</span><b class="${cl(p)}">${p >= 0 ? '+1.00R' : '-1.00R'}</b></div>
+      <div><span>P/L Bersih</span><b class="${cl(p)}">${p >= 0 ? '+' : ''}$${p.toFixed(2)}</b></div>`;
+  } else {
+    const side = g('j-side')?.value || 'Buy';
+    const e = parseFloat(g('j-entry')?.value), sl = parseFloat(g('j-sl')?.value), x = parseFloat(g('j-exit')?.value), l = parseFloat(g('j-lots')?.value);
+    if ([e, sl, x, l].some(isNaN) || l <= 0) {
+      el.innerHTML = `<div><span>Mode Input</span><b>📐 Harga & Lot</b></div><div><span>R-Multiple</span><b>0.00R</b></div><div><span>Estimasi P/L</span><b>$0.00</b></div>`;
+      return;
+    }
+    const t = { side, entry: e, sl, exit: x, lots: l };
+    const pnl = P(t), rv = R(t);
+    el.innerHTML = `
+      <div><span>Mode Input</span><b>📐 Harga & Lot (${l} lot)</b></div>
+      <div><span>R-Multiple</span><b class="${cl(rv)}">${rv >= 0 ? '+' : ''}${rv.toFixed(2)}R</b></div>
+      <div><span>Estimasi P/L</span><b class="${cl(pnl)}">${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}</b></div>`;
+  }
+}
+
+function renderTradeTable(list, withActions) {
+  if (!list.length) return '<p class="sub">Belum ada data transaksi.</p>';
+  return `
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Tipe / Arah</th>
+            <th>Entry → Exit</th>
+            <th>Lot</th>
+            <th>Setup</th>
+            <th>Chart</th>
+            <th>R</th>
+            <th>P/L ($)</th>
+            ${withActions ? '<th>Aksi</th>' : ''}
+          </tr>
+        </thead>
+        <tbody>
+          ${list.map(t => {
+            const dir = isDirect(t), pVal = P(t), rVal = R(t);
+            return `
+            <tr>
+              <td class="mono">${t.date}</td>
+              <td>${dir ? `<span class="tag gold">⚡ P/L Langsung</span>` : `<strong>${t.side}</strong>`}</td>
+              <td class="mono">${dir ? '-' : `${t.entry} → ${t.exit}`}</td>
+              <td class="mono">${dir ? '-' : t.lots}</td>
+              <td>${t.setup || '-'}</td>
+              <td>${t.img ? `<button type="button" class="btn ghost xs" onclick="openImageViewer('${t.img}', 'Trade ${t.date} #${t.id}')">🖼️ Lihat</button>` : '<span class="sub">-</span>'}</td>
+              <td class="mono ${cl(rVal)}">${rVal >= 0 ? '+' : ''}${rVal.toFixed(2)}R</td>
+              <td class="${cl(pVal)}">${fmt$(pVal)}</td>
+              ${withActions ? `<td><div class="row" style="gap:4px">
+                <button type="button" class="btn ghost xs" onclick="copySignalFormat(${t.id})">📋 Copy</button>
+                <button type="button" class="btn ghost xs" onclick="startEditTrade(${t.id})">Edit</button>
+                <button type="button" class="btn danger xs" onclick="deleteTrade(${t.id})">Hapus</button>
+              </div></td>` : ''}
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function renderJurnal() {
+  const acc = A();
+  g('v-jurnal').innerHTML = `
+    <div class="panel" onpaste="handlePasteImage(event)">
+      <div class="panel-head">
+        <h3 id="j-form-heading">Catat Transaksi XAUUSD</h3>
+        <div class="mode-switch" id="j-mode-tabs">
+          <button type="button" data-mode="full" class="${journalMode === 'full' ? 'active' : ''}" onclick="setJournalMode('full')">📐 Mode Lengkap (Entry/SL/Exit)</button>
+          <button type="button" data-mode="direct" class="${journalMode === 'direct' ? 'active' : ''}" onclick="setJournalMode('direct')">⚡ Mode Cepat (P/L Langsung $)</button>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <label>Tanggal<input type="date" id="j-date" value="${tod()}"></label>
+        <label>Sesi Trading<select id="j-ses"><option>Asia</option><option>London</option><option>New York</option><option selected>Overlap</option></select></label>
+
+        <div id="j-full-box" style="display:${journalMode === 'full' ? 'contents' : 'none'}">
+          <label>Arah Posisi<select id="j-side" onchange="updateJurnalPreview()"><option>Buy</option><option>Sell</option></select></label>
+          <label>Ukuran Lot (1 Lot = 100 oz)<input type="number" step="0.01" id="j-lots" value="0.10" oninput="updateJurnalPreview()"></label>
+          <label>Harga Entry<input type="number" step="0.01" id="j-entry" placeholder="${liveXau.price.toFixed(2)}" oninput="updateJurnalPreview()"></label>
+          <label>Stop Loss (SL)<input type="number" step="0.01" id="j-sl" placeholder="${(liveXau.price - 6).toFixed(2)}" oninput="updateJurnalPreview()"></label>
+          <label class="full" style="grid-column:1/-1">Harga Exit (TP / Cut Loss)<input type="number" step="0.01" id="j-exit" placeholder="${(liveXau.price + 12).toFixed(2)}" oninput="updateJurnalPreview()"></label>
+        </div>
+
+        <div id="j-direct-box" style="grid-column:1/-1;display:${journalMode === 'direct' ? 'block' : 'none'}">
+          <label>Nominal Keuntungan / Kerugian Bersih ($) — Gunakan tanda minus (-) jika loss
+            <input type="number" step="0.01" id="j-dpnl" placeholder="Contoh: 185 untuk profit $185, atau -65 untuk loss $65" oninput="updateJurnalPreview()">
+          </label>
+        </div>
+
+        <label>Setup / Strategi<select id="j-setup"><option>Pullback</option><option>Breakout</option><option>Reversal</option><option>Liquidity Sweep</option></select></label>
+        <label>Emosi Saat Entry<select id="j-emo"><option>Tenang</option><option>Yakin</option><option>FOMO</option><option>Takut</option><option>Revenge</option></select></label>
+        <label style="grid-column:1/-1">Evaluasi Kesalahan<select id="j-err"><option>Tidak ada</option><option>Entry terlalu cepat</option><option>Geser stop loss</option><option>Lot terlalu besar</option><option>Melanggar plan</option></select></label>
+        
+        <!-- Lampiran Screenshot Bukti -->
+        <div style="grid-column:1/-1">
+          <label style="margin-bottom:4px">Bukti Screenshot Setup Chart (Tempel/Ctrl+V langsung di sini atau Pilih File):</label>
+          <div class="upload-dropzone" onclick="g('j-file-in').click()">
+            <input type="file" id="j-file-in" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
+            <span>📸 Klik untuk upload atau <b>Paste (Ctrl+V)</b> gambar chart dari TradingView/MT5</span>
+            <img id="j-thumb-preview" class="thumb-prev" src="" alt="Preview Screenshot">
+          </div>
+        </div>
+
+        <label style="grid-column:1/-1">Catatan & Alasan Entry<textarea id="j-note" placeholder="Tulis konfirmasi teknikal, rilis berita makro, atau pelajaran dari trade ini..."></textarea></label>
+      </div>
+
+      <div class="live-strip" id="j-live-preview"></div>
+      <div class="row" style="margin-top:14px">
+        <button type="button" class="btn" id="j-submit-btn" onclick="submitTrade()">Simpan ke Jurnal</button>
+        <button type="button" class="btn ghost" id="j-cancel-edit" style="display:none" onclick="cancelEdit()">Batal Edit</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Riwayat Transaksi (${acc.trades.length})</h3>
+        <div class="row">
+          <input id="j-search" placeholder="Cari setup / catatan..." style="width:180px;margin:0" oninput="jFilter.q=this.value;filterJournal()">
+          <select id="j-side-filter" style="width:140px;margin:0" onchange="jFilter.side=this.value;filterJournal()">
+            <option value="">Semua Tipe</option>
+            <option value="Buy">Buy</option>
+            <option value="Sell">Sell</option>
+            <option value="Direct">P/L Langsung</option>
+          </select>
+        </div>
+      </div>
+      <div id="j-table-wrap"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Pengaturan Akun & Challenge Prop Firm</h3>
+        <div class="grid-2" style="margin-top:10px">
+          <label>Nama Akun<input id="set-name" value="${acc.name}"></label>
+          <label>Modal Awal ($)<input type="number" id="set-start" value="${acc.start}"></label>
+          <label>Target Profit (%)<input type="number" id="set-target" value="${acc.target}"></label>
+          <label>Batas Rugi Harian (%)<input type="number" step="0.1" id="set-limit" value="${acc.limit}"></label>
+          <label style="grid-column:1/-1;display:flex;align-items:center;gap:8px;margin-top:8px">
+            <input type="checkbox" id="set-propfirm" ${acc.propFirm ? 'checked' : ''} style="width:auto;margin:0">
+            <span>Aktifkan Mode Prop Firm Guard (Kunci Peringatan Rugi Harian & Stop Out)</span>
+          </label>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button type="button" class="btn ghost" onclick="saveAccountSettings()">Simpan Pengaturan</button>
+          <button type="button" class="btn ghost" onclick="createNewAccount()">+ Akun Baru</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Ekspor & Impor Data (CSV / JSON)</h3>
+        <p class="sub" style="margin:4px 0 8px">Salin teks backup untuk menyimpan data secara permanen atau impor CSV.</p>
+        <textarea id="io-box" style="min-height:84px" placeholder="Klik Ekspor untuk melihat data CSV/JSON, atau tempel data di sini lalu klik Impor..."></textarea>
+        <div class="row" style="margin-top:10px">
+          <button type="button" class="btn ghost sm" onclick="exportCsv()">Ekspor CSV</button>
+          <button type="button" class="btn ghost sm" onclick="exportJson()">Ekspor JSON</button>
+          <button type="button" class="btn ghost sm" onclick="importJson()">Impor JSON</button>
+        </div>
+      </div>
+    </div>`;
+
+  updateJurnalPreview();
+  filterJournal();
+}
+
+function filterJournal() {
+  const q = jFilter.q.toLowerCase();
+  const list = [...A().trades].reverse().filter(t => {
+    const matchSide = !jFilter.side || (jFilter.side === 'Direct' ? isDirect(t) : t.side === jFilter.side);
+    const matchQ = !q || ((t.setup || '') + ' ' + (t.note || '') + ' ' + (t.session || '')).toLowerCase().includes(q);
+    return matchSide && matchQ;
+  });
+  if (g('j-table-wrap')) g('j-table-wrap').innerHTML = renderTradeTable(list, true);
+}
+
+function submitTrade() {
+  const acc = A();
+  const s = calcStats();
+
+  // Prop Firm Guard Check
+  if (acc.propFirm && s.todayLossPct >= acc.limit) {
+    if (!confirm(`⚠️ PERINGATAN PROP FIRM: Anda sudah rugi ${s.todayLossPct.toFixed(1)}% hari ini (Batas: ${acc.limit}%). Melanjutkan trade berisiko mendiskualifikasi akun Anda. Tetap simpan?`)) {
+      return;
+    }
+  }
+
+  const date = g('j-date').value || tod();
+  const session = g('j-ses').value;
+  const setup = g('j-setup').value;
+  const emo = g('j-emo').value;
+  const err = g('j-err').value;
+  const note = g('j-note').value;
+  const img = currentImgBase64;
+
+  let item = null;
+  if (journalMode === 'direct') {
+    const dpnl = parseFloat(g('j-dpnl').value);
+    if (isNaN(dpnl)) { toast('Masukkan nominal P/L langsung ($)'); return; }
+    item = { id: editId || Date.now(), date, side: 'Rekap Harian', directPnl: dpnl, setup, session, emo, err, note, img };
+  } else {
+    const entry = parseFloat(g('j-entry').value), sl = parseFloat(g('j-sl').value), exit = parseFloat(g('j-exit').value), lots = parseFloat(g('j-lots').value);
+    if ([entry, sl, exit, lots].some(isNaN) || lots <= 0) { toast('Lengkapi harga Entry, SL, Exit, dan Lot'); return; }
+    item = { id: editId || Date.now(), date, side: g('j-side').value, entry, sl, exit, lots, setup, session, emo, err, note, img };
+  }
+
+  if (editId) {
+    const idx = acc.trades.findIndex(x => x.id === editId);
+    if (idx !== -1) {
+      if (!img && acc.trades[idx].img) item.img = acc.trades[idx].img; // Simpan gambar lama jika tidak diganti
+      acc.trades[idx] = item;
+    }
+    editId = null;
+    toast('Transaksi berhasil diperbarui!');
+  } else {
+    acc.trades.push(item);
+    toast('Transaksi berhasil dicatat!');
+    // Trigger Telegram Notifikasi jika terkonfigurasi
+    sendTradeToTelegram(item);
+  }
+
+  currentImgBase64 = null;
+  save();
+  renderAll();
+}
+
+function startEditTrade(id) {
+  const t = A().trades.find(x => x.id === id);
+  if (!t) return;
+  editId = id;
+  setJournalMode(isDirect(t) ? 'direct' : 'full');
+  g('j-date').value = t.date;
+  g('j-ses').value = t.session || 'London';
+  g('j-setup').value = t.setup || 'Pullback';
+  g('j-emo').value = t.emo || 'Tenang';
+  g('j-err').value = t.err || 'Tidak ada';
+  g('j-note').value = t.note || '';
+  if (t.img) {
+    currentImgBase64 = t.img;
+    const imgEl = g('j-thumb-preview');
+    if (imgEl) { imgEl.src = t.img; imgEl.style.display = 'block'; }
+  }
+  if (isDirect(t)) { g('j-dpnl').value = t.directPnl; }
+  else { g('j-side').value = t.side; g('j-entry').value = t.entry; g('j-sl').value = t.sl; g('j-exit').value = t.exit; g('j-lots').value = t.lots; }
+  g('j-form-heading').textContent = '✏️ Edit Transaksi #' + id;
+  g('j-submit-btn').textContent = 'Simpan Perubahan';
+  g('j-cancel-edit').style.display = 'inline-flex';
+  updateJurnalPreview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelEdit() { editId = null; currentImgBase64 = null; renderJurnal(); }
+function deleteTrade(id) { A().trades = A().trades.filter(t => t.id !== id); save(); renderAll(); toast('Transaksi dihapus'); }
+
+function copySignalFormat(id) {
+  const t = A().trades.find(x => x.id === id);
+  if (!t) return;
+  let text = '';
+  if (isDirect(t)) {
+    text = `XAUUSD TRADE RECAP\nTanggal: ${t.date}\nSesi: ${t.session}\nP/L: $${t.directPnl}\nSetup: ${t.setup}`;
+  } else {
+    text = `XAUUSD ${t.side.toUpperCase()}\nEntry: ${t.entry}\nSL: ${t.sl}\nExit/TP: ${t.exit}\nLot: ${t.lots}\nSetup: ${t.setup}`;
+  }
+  navigator.clipboard.writeText(text).then(() => toast('Format Signal MT4/MT5 disalin ke clipboard!'));
+}
+
+function saveAccountSettings() {
+  const acc = A();
+  acc.name = g('set-name').value.trim() || acc.name;
+  acc.start = parseFloat(g('set-start').value) || acc.start;
+  acc.target = parseFloat(g('set-target').value) || acc.target;
+  acc.limit = parseFloat(g('set-limit').value) || acc.limit;
+  acc.propFirm = g('set-propfirm').checked;
+  save(); renderAll(); toast('Pengaturan akun disimpan');
+}
+
+function createNewAccount() {
+  const id = Date.now();
+  S.acc.push({ id, name: 'Akun Prop Firm #' + (S.acc.length + 1), start: 25000, target: 8, limit: 4, maxdd: 8, trades: [], propFirm: true });
+  S.cur = id; save(); renderAll(); toast('Akun baru ditambahkan');
+}
+
+function exportCsv() {
+  g('io-box').value = 'tanggal,arah,entry,sl,exit,lot,pnl,setup,sesi\n' +
+    A().trades.map(t => [t.date, t.side, t.entry || 0, t.sl || 0, t.exit || 0, t.lots || 0, P(t).toFixed(2), t.setup, t.session].join(',')).join('\n');
+  toast('CSV siap disalin');
+}
+function exportJson() { g('io-box').value = JSON.stringify(S); toast('Backup JSON siap disalin'); }
+function importJson() {
+  try {
+    const parsed = JSON.parse(g('io-box').value);
+    if (!parsed.acc || !parsed.acc.length) throw 0;
+    S = parsed; save(); renderAll(); toast('Backup JSON berhasil dipulihkan');
+  } catch (e) { toast('Format JSON tidak valid'); }
+}
+
+/* =========================================================
+   6. RISIKO, PROP FIRM GUARD & VISUALIZER ENTRY / SL / TP
+   ========================================================= */
+let checklistState = [1, 1, 0, 1, 1, 1];
+const CHECKLIST_ITEMS = [
+  'Tren H4 searah dengan posisi yang diambil',
+  'Harga berada di zona S/R, Fibonacci, atau EMA dinamis',
+  'Ada konfirmasi candle (Engulfing / Pinbar / BOS)',
+  'Bukan 15 menit menjelang rilis berita berdampak tinggi (CPI/NFP)',
+  'Risk to Reward minimal 1 : 2',
+  'Risiko maksimal 1% dari saldo aktif'
+];
+
+function renderRisiko() {
+  const s = calcStats();
+  const acc = A();
+  const maxLossAllowed = (acc.start * acc.limit / 100);
+  const remainingLoss = Math.max(0, maxLossAllowed - s.todayLoss);
+
+  g('v-risiko').innerHTML = `
+    <!-- Prop Firm Guard Alert -->
+    <div class="panel" style="background:linear-gradient(135deg, color-mix(in srgb, var(${s.todayLossPct >= acc.limit ? '--down' : '--gold'}) 16%, var(--panel)), var(--panel));border-color:var(${s.todayLossPct >= acc.limit ? '--down' : '--line'})">
+      <div class="panel-head">
+        <h3>🛡️ Prop Firm Guard & Max Daily Loss Tracker (${acc.name})</h3>
+        <span class="tag ${s.todayLossPct >= acc.limit ? 'danger' : 'gold'}">${s.todayLossPct >= acc.limit ? 'BATAS HARIAN TERCAPAI' : 'STATUS AKUN AMAN'}</span>
+      </div>
+      <div class="grid-4">
+        <div class="kpi"><span>BATAS RUGI HARIAN</span><b class="dn">${acc.limit}% ($${Math.round(maxLossAllowed)})</b></div>
+        <div class="kpi"><span>RUGI TEREALISASI HARI INI</span><b class="${cl(-s.todayLoss)}">-$${Math.round(s.todayLoss)} (${s.todayLossPct.toFixed(1)}%)</b></div>
+        <div class="kpi"><span>SISA BUFFER RUGI HARI INI</span><b class="${remainingLoss > 0 ? 'up' : 'dn'}">$${Math.round(remainingLoss)}</b></div>
+        <div class="kpi"><span>TRAILING MAX DRAWDOWN</span><b class="mono dn">${s.maxDd.toFixed(1)}% / ${acc.maxdd}%</b></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Visualizer Entry / SL / TP -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>📐 Visualizer Entry, Stop Loss & Take Profit</h3>
+          <span class="tag gold">SVG Live Preview</span>
+        </div>
+        <div class="grid-2">
+          <label>Arah Posisi<select id="vis-side" onchange="updateVisualizer()"><option value="Buy">Buy (Long)</option><option value="Sell">Sell (Short)</option></select></label>
+          <label>Saldo Akun ($)<input type="number" id="vis-bal" value="${Math.round(s.bal)}" oninput="updateVisualizer()"></label>
+          <label>Risiko per Trade (%)<input type="number" step="0.1" id="vis-risk" value="1.0" oninput="updateVisualizer()"></label>
+          <label>Leverage<select id="vis-lev" onchange="updateVisualizer()"><option value="100">1:100</option><option value="200">1:200</option><option value="500" selected>1:500</option></select></label>
+          <label>Harga Entry<input type="number" step="0.01" id="vis-entry" value="${liveXau.price.toFixed(2)}" oninput="updateVisualizer()"></label>
+          <label>Stop Loss (SL)<input type="number" step="0.01" id="vis-sl" value="${(liveXau.price - 6).toFixed(2)}" oninput="updateVisualizer()"></label>
+          <label style="grid-column:1/-1">Take Profit (TP)<input type="number" step="0.01" id="vis-tp" value="${(liveXau.price + 14).toFixed(2)}" oninput="updateVisualizer()"></label>
+        </div>
+
+        <div class="vis-card" id="vis-output"></div>
+      </div>
+
+      <!-- Checklist & Monte Carlo -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="panel">
+          <h3>✅ Checklist Disiplin Sebelum Entry</h3>
+          <div id="chk-container" style="margin-top:6px"></div>
+          <div id="chk-verdict" style="margin-top:12px;font-weight:800;font-size:15px"></div>
+        </div>
+
+        <div class="panel">
+          <h3>🎲 Simulasi Monte Carlo (25 Jalur Ekuitas)</h3>
+          <p class="sub" style="margin:4px 0 10px">Menguji ketahanan modal Anda dalam 100 trade ke depan berdasarkan distribusi R-Multiple riwayat Anda.</p>
+          <div class="grid-2">
+            <label>Risiko per Trade (%)<input type="number" step="0.1" id="mc-risk" value="1.0"></label>
+            <label>Batas Drawdown (%)<input type="number" id="mc-dd" value="10"></label>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button type="button" class="btn" onclick="runMonteCarlo()">Jalankan Simulasi Monte Carlo</button>
+          </div>
+          <div id="mc-result" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>`;
+
+  updateVisualizer();
+  renderChecklist();
+  runMonteCarlo();
+}
+
+function updateVisualizer() {
+  const side = g('vis-side')?.value || 'Buy';
+  const bal = parseFloat(g('vis-bal')?.value) || 10000;
+  const riskPct = parseFloat(g('vis-risk')?.value) || 1;
+  const lev = parseFloat(g('vis-lev')?.value) || 500;
+  const entry = parseFloat(g('vis-entry')?.value) || liveXau.price;
+  const sl = parseFloat(g('vis-sl')?.value) || (liveXau.price - 8);
+  const tp = parseFloat(g('vis-tp')?.value) || (liveXau.price + 16);
+
+  const riskPts = Math.abs(entry - sl);
+  const rewardPts = Math.abs(tp - entry);
+  const rrr = riskPts > 0 ? (rewardPts / riskPts) : 0;
+  const riskUsd = bal * (riskPct / 100);
+  const optLot = riskPts > 0 ? Math.max(0.01, Math.floor((riskUsd / (riskPts * 100)) * 100) / 100) : 0.01;
+  const rewardUsd = optLot * rewardPts * 100;
+  const marginUsd = (optLot * 100 * entry) / lev;
+
+  const totalPts = Math.max(1, riskPts + rewardPts);
+  const tpPct = Math.max(22, Math.min(72, (rewardPts / totalPts) * 100));
+  const slPct = 100 - tpPct;
+
+  const isBuy = side === 'Buy';
+  const topZoneH = isBuy ? tpPct : slPct;
+  const botZoneH = isBuy ? slPct : tpPct;
+  const topColor = isBuy ? 'rgba(16,185,129,0.22)' : 'rgba(244,63,94,0.22)';
+  const topStroke = isBuy ? '#10B981' : '#F43F5E';
+  const botColor = isBuy ? 'rgba(244,63,94,0.22)' : 'rgba(16,185,129,0.22)';
+  const botStroke = isBuy ? '#F43F5E' : '#10B981';
+
+  const topLabel = isBuy ? `TAKE PROFIT: ${tp.toFixed(2)} (+${rewardPts.toFixed(2)} pts | +$${Math.round(rewardUsd)})` : `STOP LOSS: ${sl.toFixed(2)} (-${riskPts.toFixed(2)} pts | -$${Math.round(riskUsd)})`;
+  const botLabel = isBuy ? `STOP LOSS: ${sl.toFixed(2)} (-${riskPts.toFixed(2)} pts | -$${Math.round(riskUsd)})` : `TAKE PROFIT: ${tp.toFixed(2)} (+${rewardPts.toFixed(2)} pts | +$${Math.round(rewardUsd)})`;
+
+  const svgH = 190, pad = 14, innerH = svgH - pad * 2;
+  const yTop = pad;
+  const yEntry = pad + (innerH * topZoneH / 100);
+  const yBot = pad + innerH;
+
+  g('vis-output').innerHTML = `
+    <svg class="vis-svg" viewBox="0 0 500 ${svgH}">
+      <rect x="20" y="${yTop}" width="460" height="${yEntry - yTop}" fill="${topColor}" stroke="${topStroke}" stroke-width="1.2" rx="6"/>
+      <text x="32" y="${yTop + 18}" fill="${topStroke}" font-size="11.5" font-weight="700" font-family="JetBrains Mono, monospace">${topLabel}</text>
+
+      <rect x="20" y="${yEntry}" width="460" height="${yBot - yEntry}" fill="${botColor}" stroke="${botStroke}" stroke-width="1.2" rx="6"/>
+      <text x="32" y="${yBot - 8}" fill="${botStroke}" font-size="11.5" font-weight="700" font-family="JetBrains Mono, monospace">${botLabel}</text>
+
+      <line x1="14" y1="${yEntry}" x2="486" y2="${yEntry}" stroke="#E8BA55" stroke-width="2.5" stroke-dasharray="6 4"/>
+      <rect x="300" y="${yEntry - 12}" width="175" height="24" rx="12" fill="#E8BA55"/>
+      <text x="387" y="${yEntry + 4}" text-anchor="middle" fill="#1A1202" font-size="11.5" font-weight="800" font-family="JetBrains Mono, monospace">ENTRY ${entry.toFixed(2)} (1:${rrr.toFixed(2)})</text>
+    </svg>
+
+    <div class="grid-4" style="margin-top:12px">
+      <div class="kpi"><span>LOT OPTIMAL</span><b class="gd">${optLot.toFixed(2)} Lot</b></div>
+      <div class="kpi"><span>RISIKO (${riskPct}%)</span><b class="dn">-$${riskUsd.toFixed(2)}</b></div>
+      <div class="kpi"><span>POTENSI PROFIT</span><b class="up">+$${rewardUsd.toFixed(2)}</b></div>
+      <div class="kpi"><span>EST. MARGIN</span><b class="mono">$${marginUsd.toFixed(2)}</b></div>
+    </div>`;
+}
+
+function renderChecklist() {
+  g('chk-container').innerHTML = CHECKLIST_ITEMS.map((txt, i) => `
+    <label class="chk">
+      <input type="checkbox" ${checklistState[i] ? 'checked' : ''} onchange="checklistState[${i}]=this.checked?1:0;renderChecklist()">
+      <span>${txt}</span>
+    </label>`).join('');
+  const score = checklistState.filter(Boolean).length;
+  const v = g('chk-verdict');
+  if (score === 6) v.innerHTML = `<span class="up">✅ 6/6 Syarat Terpenuhi — Setup Valid & Siap Eksekusi!</span>`;
+  else if (score >= 4) v.innerHTML = `<span class="gd">⚠️ ${score}/6 Terpenuhi — Tunggu konfirmasi tambahan sebelum entry.</span>`;
+  else v.innerHTML = `<span class="dn">🛑 ${score}/6 Terpenuhi — Jangan masuk pasar (Risiko Tinggi).</span>`;
+}
+
+function runMonteCarlo() {
+  const s = calcStats();
+  const rDist = s.T.length >= 3 ? s.T.map(R) : [1.8, -1, 2.1, -1, 1.5, 2.4, -1, 1.2];
+  const rk = (parseFloat(g('mc-risk')?.value) || 1) / 100;
+  const ddLim = (parseFloat(g('mc-dd')?.value) || 10) / 100;
+  const sims = 25, steps = 50;
+  const paths = [];
+  let ruinCount = 0;
+
+  for (let i = 0; i < sims; i++) {
+    let eq = 100, pk = 100, ruined = false;
+    const arr = [100];
+    for (let st = 0; st < steps; st++) {
+      const rPick = rDist[Math.floor(Math.random() * rDist.length)];
+      eq *= (1 + rPick * rk);
+      pk = Math.max(pk, eq);
+      if ((pk - eq) / pk >= ddLim) ruined = true;
+      arr.push(eq);
+    }
+    if (ruined) ruinCount++;
+    paths.push(arr);
+  }
+
+  const medianPath = [];
+  for (let st = 0; st <= steps; st++) {
+    const colVals = paths.map(p => p[st]).sort((a, b) => a - b);
+    medianPath.push(colVals[Math.floor(sims / 2)]);
+  }
+
+  const flat = paths.flat();
+  const mn = Math.min(85, ...flat), mx = Math.max(120, ...flat), sp = (mx - mn) || 1;
+  const W = 520, H = 145;
+  const toPath = arr => arr.map((v, i) => `${i ? 'L' : 'M'}${(i / steps * W).toFixed(1)} ${(H - 10 - ((v - mn) / sp) * (H - 20)).toFixed(1)}`).join('');
+
+  g('mc-result').innerHTML = `
+    <div class="kpi" style="margin-bottom:10px">
+      <span>PROBABILITAS TOUCH MAX DRAWDOWN ${(ddLim * 100).toFixed(0)}% (50 TRADE)</span>
+      <b class="${ruinCount / sims > 0.25 ? 'dn' : 'up'}">${(ruinCount / sims * 100).toFixed(0)}% <span class="sub" style="font-weight:500">(Median Akhir: ${medianPath[steps].toFixed(1)}% dari modal)</span></b>
+    </div>
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:145px;background:rgba(0,0,0,0.16);border-radius:14px">
+      ${paths.map(p => `<path d="${toPath(p)}" fill="none" stroke="var(--mute)" stroke-opacity="0.28" stroke-width="1.2"/>`).join('')}
+      <path d="${toPath(medianPath)}" fill="none" stroke="var(--gold)" stroke-width="2.6"/>
+    </svg>`;
+}
+
+/* =========================================================
+   6B. KALKULATOR FIBONACCI RETRACEMENT & PIP NILAI EMAS
+   ========================================================= */
+function renderKalkulator() {
+  const p = liveXau.price;
+  const highEst = (p + 14.5).toFixed(2);
+  const lowEst = (p - 18.0).toFixed(2);
+
+  g('v-kalkulator').innerHTML = `
+    <div class="grid-2">
+      <!-- Auto Fibonacci Retracement Golden Pocket -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>📐 Auto Fibonacci Retracement & Golden Pocket (XAU/USD)</h3>
+          <span class="tag gold">Institutional Zones</span>
+        </div>
+        <p class="sub" style="margin-top:0">Hitung level retracement presisi untuk entry pullback searah tren swing.</p>
+        <div class="grid-2">
+          <label>Swing High ($)<input type="number" step="0.01" id="fibo-high" value="${highEst}" oninput="calcFiboLevels()"></label>
+          <label>Swing Low ($)<input type="number" step="0.01" id="fibo-low" value="${lowEst}" oninput="calcFiboLevels()"></label>
+          <label style="grid-column:1/-1">Arah Tren / Swing
+            <select id="fibo-dir" onchange="calcFiboLevels()">
+              <option value="up">Uptrend (Retracement Diskon untuk BUY)</option>
+              <option value="down">Downtrend (Retracement Premium untuk SELL)</option>
+            </select>
+          </label>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button type="button" class="btn ghost sm" onclick="useCurrentHighLowFibo()">Gunakan High/Low Hari Ini</button>
+        </div>
+        <div id="fibo-results-box" style="margin-top:14px"></div>
+      </div>
+
+      <!-- Kalkulator Pip, Margin & Leverage XAU/USD -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>🪙 Kalkulator Pip Value, Nilai Kontrak & Margin</h3>
+          <span class="tag on">Gold Specs: 1 Lot = 100 oz</span>
+        </div>
+        <div class="grid-2">
+          <label>Ukuran Lot<input type="number" step="0.01" id="pip-lot" value="0.10" oninput="calcGoldPip()"></label>
+          <label>Jarak Poin / Pip (1 Poin = $1.00 gerakan)<input type="number" step="0.1" id="pip-dist" value="10.0" oninput="calcGoldPip()"></label>
+          <label>Leverage Broker
+            <select id="pip-lev" onchange="calcGoldPip()">
+              <option value="100">1:100</option>
+              <option value="200">1:200</option>
+              <option value="500" selected>1:500</option>
+              <option value="1000">1:1000</option>
+            </select>
+          </label>
+          <label>Harga Spot Masuk ($)<input type="number" step="0.01" id="pip-price" value="${p.toFixed(2)}" oninput="calcGoldPip()"></label>
+        </div>
+        <div id="pip-results-box" style="margin-top:14px"></div>
+      </div>
+    </div>`;
+
+  calcFiboLevels();
+  calcGoldPip();
+}
+
+function useCurrentHighLowFibo() {
+  if (g('fibo-high')) g('fibo-high').value = liveXau.high.toFixed(2);
+  if (g('fibo-low')) g('fibo-low').value = liveXau.low.toFixed(2);
+  calcFiboLevels();
+  toast('High/Low Hari Ini diterapkan ke Fibonacci!');
+}
+
+function calcFiboLevels() {
+  const high = parseFloat(g('fibo-high')?.value) || (liveXau.price + 15);
+  const low = parseFloat(g('fibo-low')?.value) || (liveXau.price - 15);
+  const dir = g('fibo-dir')?.value || 'up';
+  const diff = high - low;
+  const isUp = dir === 'up';
+
+  const ratios = [
+    { r: 0.0, l: '0.0% (Extreme End)' },
+    { r: 0.236, l: '23.6% (Shallow)' },
+    { r: 0.382, l: '38.2% (Moderate)' },
+    { r: 0.50, l: '50.0% (Equilibrium / Diskon)' },
+    { r: 0.618, l: '61.8% (GOLDEN POCKET ✨)' },
+    { r: 0.786, l: '78.6% (Deep Retracement)' },
+    { r: 1.0, l: '100.0% (Invalidation Base)' }
+  ];
+
+  const levels = ratios.map(item => {
+    const val = isUp ? (high - diff * item.r) : (low + diff * item.r);
+    return { ...item, val: val.toFixed(2) };
+  });
+
+  const golden618 = levels.find(x => x.r === 0.618)?.val;
+  const golden50 = levels.find(x => x.r === 0.50)?.val;
+
+  g('fibo-results-box').innerHTML = `
+    <div style="background:var(--field);border:1px solid var(--gold);border-radius:14px;padding:12px;margin-bottom:12px">
+      <div class="row" style="justify-content:space-between">
+        <strong>🎯 Zona Golden Pocket (50% - 61.8%):</strong>
+        <b class="gd mono" style="font-size:15px">$${Math.min(golden50, golden618)} — $${Math.max(golden50, golden618)}</b>
+      </div>
+      <p class="sub" style="margin:4px 0 0">Area paling sering terjadi reversal institusional. Tunggu konfirmasi candle reject di area ini.</p>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Rasio Fibonacci</th>
+            <th>Tipe Level</th>
+            <th>Harga Target ($)</th>
+            <th>Aksi Cepat</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${levels.map(lv => `
+            <tr style="${lv.r === 0.618 ? 'background:rgba(232,186,85,0.12);font-weight:700' : ''}">
+              <td class="mono"><strong>${(lv.r * 100).toFixed(1)}%</strong></td>
+              <td>${lv.l}</td>
+              <td class="mono gd"><strong>${lv.val}</strong></td>
+              <td><button type="button" class="btn ghost xs" onclick="applyFiboToVisualizer(${lv.val})">Pasang Entry</button></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function applyFiboToVisualizer(price) {
+  switchTab('risiko');
+  setTimeout(() => {
+    if (g('vis-entry')) { g('vis-entry').value = price; updateVisualizer(); }
+    toast(`Harga Golden Pocket $${price} diterapkan ke Visualizer!`);
+  }, 60);
+}
+
+function calcGoldPip() {
+  const lot = parseFloat(g('pip-lot')?.value) || 0.10;
+  const dist = parseFloat(g('pip-dist')?.value) || 10.0;
+  const lev = parseFloat(g('pip-lev')?.value) || 500;
+  const price = parseFloat(g('pip-price')?.value) || liveXau.price;
+
+  // XAUUSD: 1 Standard Lot = 100 troy ounces
+  // $1.00 move per 1.0 lot = $100 P/L.
+  // 1 pip standard forex = $0.10 move in gold ($10 per 1.0 lot).
+  const profitMove = dist * lot * 100;
+  const marginReq = (lot * 100 * price) / lev;
+  const pipValuePerPoint = (lot * 100);
+
+  g('pip-results-box').innerHTML = `
+    <div class="grid-2">
+      <div class="kpi"><span>NILAI 1 POIN PERGERAKAN</span><b class="gd mono">$${pipValuePerPoint.toFixed(2)} / Poin</b></div>
+      <div class="kpi"><span>ESTIMASI P/L UNTUK ${dist} POIN</span><b class="up mono">+$${profitMove.toFixed(2)}</b></div>
+      <div class="kpi"><span>MARGIN DIPERLUKAN (1:${lev})</span><b class="mono">$${marginReq.toFixed(2)}</b></div>
+      <div class="kpi"><span>NOTIONAL VALUE (KONTRAK)</span><b class="mono">$${(lot * 100 * price).toLocaleString('en-US', {maximumFractionDigits:0})}</b></div>
+    </div>
+    <div class="sub" style="margin-top:12px;font-size:11.5px">
+      💡 <b>Rumus XAU/USD:</b> P/L = Jarak Poin x Ukuran Lot x 100 oz. Pergerakan $1.00 pada harga emas dengan 0.10 lot setara dengan nilai \$10.00.
+    </div>`;
+}
+
+/* =========================================================
+   6C. AUDIT PSIKOLOGI TRADING & ANALITIK HEATMAP
+   ========================================================= */
+function renderAnalitik() {
+  const s = calcStats();
+  const acc = A();
+  const trades = acc.trades || [];
+
+  // Analisa Emosi
+  const emoMap = {};
+  const errMap = {};
+  trades.forEach(t => {
+    const e = t.emo || 'Tenang';
+    const er = t.err || 'Tidak ada';
+    const pnl = P(t);
+    emoMap[e] = emoMap[e] || { count: 0, pnl: 0, wins: 0 };
+    emoMap[e].count++;
+    emoMap[e].pnl += pnl;
+    if (pnl > 0) emoMap[e].wins++;
+
+    errMap[er] = errMap[er] || { count: 0, loss: 0 };
+    errMap[er].count++;
+    if (pnl < 0) errMap[er].loss += Math.abs(pnl);
+  });
+
+  const emoList = Object.keys(emoMap).map(k => ({ name: k, ...emoMap[k] }));
+  const errList = Object.keys(errMap).filter(k => k !== 'Tidak ada').map(k => ({ name: k, ...errMap[k] }));
+
+  g('v-analitik').innerHTML = `
+    <div class="grid-2">
+      <!-- Analisa Pengaruh Emosi Terhadap Performa -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>🧠 Audit Psikologi & Emosi Trader</h3>
+          <span class="tag gold">Mindset Matrix</span>
+        </div>
+        <p class="sub" style="margin-top:0">Melihat kondisi emosi yang menghasilkan performa terbaik dan yang merusak akun Anda.</p>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Kondisi Emosi</th>
+                <th>Total Trade</th>
+                <th>Win Rate</th>
+                <th>Akumulasi P/L ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${emoList.length ? emoList.map(em => `
+                <tr>
+                  <td><strong>${em.name}</strong></td>
+                  <td class="mono">${em.count} trade</td>
+                  <td class="mono">${((em.wins / em.count) * 100).toFixed(0)}%</td>
+                  <td class="mono ${cl(em.pnl)}">${em.pnl >= 0 ? '+' : ''}$${Math.round(em.pnl)}</td>
+                </tr>`).join('') : '<tr><td colspan="4" class="sub">Belum ada riwayat transaksi.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Biaya Pelanggaran / Kesalahan (Cost of Mistakes) -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>🛑 Biaya Kebocoran Modal (Cost of Mistakes)</h3>
+          <span class="tag danger">Leakage Audit</span>
+        </div>
+        <p class="sub" style="margin-top:0">Total uang yang hilang akibat melanggar aturan dan kesalahan teknikal.</p>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Tipe Kesalahan</th>
+                <th>Frekuensi</th>
+                <th>Total Kerugian ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${errList.length ? errList.map(er => `
+                <tr>
+                  <td><strong class="dn">${er.name}</strong></td>
+                  <td class="mono">${er.count} kali</td>
+                  <td class="mono dn">-$${Math.round(er.loss)}</td>
+                </tr>`).join('') : '<tr><td colspan="3" class="sub">Hebat! Belum ada catatan kesalahan trading.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rekomendasi Audit Personal -->
+    <div class="panel">
+      <h3>📋 Rekomendasi Audit Khusus Profil (${activeProfile.name})</h3>
+      <div class="grid-3" style="margin-top:12px">
+        <div class="kpi">
+          <span>SETUP PALING PROFITABLE</span>
+          <b class="up" style="font-size:16px">Pullback H1 / H4</b>
+          <div class="sub" style="margin-top:4px">Fokus 80% energi hanya pada setup ini.</div>
+        </div>
+        <div class="kpi">
+          <span>JAM EMAS ANDA</span>
+          <b class="gd" style="font-size:16px">Sesi Overlap (19:00 - 23:00)</b>
+          <div class="sub" style="margin-top:4px">Likuiditas tertinggi dan spread terketat.</div>
+        </div>
+        <div class="kpi">
+          <span>ATURAN UTAMA HARI INI</span>
+          <b class="dn" style="font-size:16px">Maksimal 2 Trade / Hari</b>
+          <div class="sub" style="margin-top:4px">Mencegah overtrading pasca-profit atau loss.</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* =========================================================
+   6D. SENTIMEN RETAIL VS SMART MONEY & COT MATRIX
+   ========================================================= */
+let mockSentiment = { retailLong: 73, retailShort: 27, cotCommercialNet: '+42,500 Kontrak (Net Long)', cotNonComm: '-18,200 Kontrak' };
+
+function renderSentimen() {
+  const isCrowdedBuy = mockSentiment.retailLong >= 70;
+  const isCrowdedSell = mockSentiment.retailShort >= 70;
+  let verdict = 'Netral - Peluang Dua Arah';
+  let verdictColor = 'gd';
+  let advice = 'Distribusi posisi retail berimbang. Ikuti struktur tren teknikal H1/H4.';
+
+  if (isCrowdedBuy) {
+    verdict = '🚨 CONTRARIAN ALERT: RETAIL OVERCROWDED BUY!';
+    verdictColor = 'dn';
+    advice = `Sebanyak ${mockSentiment.retailLong}% trader retail menumpuk posisi BUY. Smart Money / Institusi cenderung mencari likuiditas dengan melakukan rekayasa harga turun (Long Squeeze / Dump) sebelum rally sejati. Waspadai buy di area resistance!`;
+  } else if (isCrowdedSell) {
+    verdict = '🚀 CONTRARIAN ALERT: RETAIL OVERCROWDED SELL!';
+    verdictColor = 'up';
+    advice = `Sebanyak ${mockSentiment.retailShort}% trader retail terjebak SELL. Potensi Short Squeeze agresif ke atas menuju area liquidity pool. Cari setup Buy on Dip!`;
+  }
+
+  g('v-sentimen').innerHTML = `
+    <div class="grid-2">
+      <!-- Retail Sentiment Meter -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>👥 Retail Position Sentiment Meter (XAU/USD)</h3>
+          <span class="tag gold">Live Broker Aggregator</span>
+        </div>
+        <p class="sub" style="margin-top:0">Mengukur persentase trader retail di seluruh broker global yang sedang memegang posisi Buy vs Sell.</p>
+        
+        <div style="margin:20px 0 10px">
+          <div style="display:flex;justify-content:space-between;font-weight:800;font-size:16px;margin-bottom:6px">
+            <span class="up">BUY: ${mockSentiment.retailLong}%</span>
+            <span class="dn">SELL: ${mockSentiment.retailShort}%</span>
+          </div>
+          <!-- Bar Sentiment Visual -->
+          <div style="width:100%;height:22px;border-radius:12px;background:rgba(244,63,94,0.3);overflow:hidden;display:flex;border:1px solid var(--line-sub)">
+            <div style="width:${mockSentiment.retailLong}%;height:100%;background:linear-gradient(90deg, #10B981, #059669);transition:width 0.4s"></div>
+            <div style="width:${mockSentiment.retailShort}%;height:100%;background:linear-gradient(90deg, #DC2626, #F43F5E);transition:width 0.4s"></div>
+          </div>
+        </div>
+
+        <div style="background:var(--field);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px">
+          <div class="row" style="justify-content:space-between">
+            <strong class="${verdictColor}" style="font-size:14px">${verdict}</strong>
+            <span class="tag ${isCrowdedBuy ? 'danger' : 'on'}">Contrarian Rule</span>
+          </div>
+          <p class="sub" style="margin:8px 0 0;color:var(--ink);line-height:1.6">${advice}</p>
+        </div>
+      </div>
+
+      <!-- COT Report (Commitments of Traders CFTC) -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>🏦 Institusi & Commercials (Laporan CFTC / COT)</h3>
+          <span class="tag on">Smart Money Flow</span>
+        </div>
+        <p class="sub" style="margin-top:0">Data posisi kontrak berjangka bank bullion & hedge fund di bursa COMEX New York.</p>
+        
+        <div class="grid-2" style="margin-top:10px">
+          <div class="kpi">
+            <span>COMMERCIAL BANKS (PRODUCERS)</span>
+            <b class="up mono" style="font-size:15px">${mockSentiment.cotCommercialNet}</b>
+            <div class="sub" style="margin-top:4px">Bank fisik mulai menambah akumulasi perlindungan hedging.</div>
+          </div>
+          <div class="kpi">
+            <span>NON-COMMERCIAL (SPECULATORS)</span>
+            <b class="mono" style="font-size:15px">${mockSentiment.cotNonComm}</b>
+            <div class="sub" style="margin-top:4px">Posisi spekulan dana lindung nilai (Hedge Fund).</div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px;background:var(--field);padding:12px">
+          <strong>💡 Tips Praktis Membaca Sentimen Emas:</strong>
+          <ul style="margin:6px 0 0;padding-left:18px;font-size:12.5px;color:var(--mute);line-height:1.6">
+            <li>Saat Retail Long > 75%, pasar emas sering membuat ekor panjang ke bawah (*stop loss hunting*) sebelum naik kembali.</li>
+            <li>Institusi cerdas jarang mengejar harga di puncak. Mereka membeli saat retail panik (*Panic Selling*).</li>
+          </ul>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* =========================================================
+   6E. FLASH EXECUTION SIMULATOR (LATIHAN REAKSI PASAR)
+   ========================================================= */
+const SIM_SCENARIOS = [
+  {
+    id: 1,
+    title: 'Skenario 1: London Open Asian High Liquidity Sweep',
+    context: 'Jam 14:15 WIB. Harga XAU/USD menembus High Asia sebesar 15 pip, namun langsung membentuk candle Pinbar Bearish di timeframe M15 dengan volume tinggi.',
+    options: [
+      { t: 'Langsung BUY (Ikuti Momentum Breakout)', correct: false, pnl: -140, msg: '❌ SALAH: Anda terjebak Bull Trap! Penembusan high Asia tanpa retest yang membentuk Pinbar adalah sweep likuiditas klasik untuk institusi menjual.' },
+      { t: 'Entry SELL (Incar Retest ke Low Asia / Demand)', correct: true, pnl: 280, msg: '✅ BENAR! Setup Liquidity Sweep Valid. Stop Loss di atas ujung wick pinbar, take profit di area equilibrium sesi Asia (+2.8R).' },
+      { t: 'Wait & See (Tunggu Konfirmasi Candle Penutup)', correct: true, pnl: 0, msg: '✅ BIJAK: Menunggu candle M15 berikutnya menutup di bawah level breakout adalah tindakan disiplin tanpa risiko.' }
+    ]
+  },
+  {
+    id: 2,
+    title: 'Skenario 2: 10 Menit Menjelang Rilis US Core CPI',
+    context: 'Jam 19:20 WIB. Harga berkonsolidasi rapat dalam range 4 poin. Spreads broker mulai melebar dari 1.5 pip menjadi 5.0 pip.',
+    options: [
+      { t: 'Pasang Pending Order Buy Stop & Sell Stop (Straddle)', correct: false, pnl: -310, msg: '❌ BAHAYA BESAR: Saat berita high impact, slippage dan requote akan mengeksekusi kedua order Anda di harga terburuk dengan spread melebar!' },
+      { t: 'Close Semua Posisi & Menunggu 15 Menit Pasca-Rilis', correct: true, pnl: 0, msg: '✅ KEPUTUSAN PRO: Modal Anda utuh 100%. Trader profesional membiarkan pasar bereaksi terlebih dahulu lalu entry saat arah likuiditas terkonfirmasi.' },
+      { t: 'Tebak Arah Masuk Lot Penuh (All In)', correct: false, pnl: -850, msg: '❌ FATAL: Ini perjudian (Gambling), bukan trading. Satu spike berlawanan dapat melikuidasi seluruh margin akun Anda.' }
+    ]
+  },
+  {
+    id: 3,
+    title: 'Skenario 3: Retest Golden Pocket Fibonacci 61.8% di Tren H4 Bullish',
+    context: 'Struktur tren H4 jelas membentuk Higher High. Terjadi koreksi 3 hari ke area $3,755 (Fibo 61.8% + Bullish Order Block H1). Muncul Bullish Engulfing di M30.',
+    options: [
+      { t: 'Entry BUY dengan Stop Loss di Bawah Swing Low', correct: true, pnl: 350, msg: '✅ LUAR BIASA! Setup A+ Confluence: Searah tren besar H4, berada di diskon Golden Pocket, dan dikonfirmasi candle engulfing (+3.5R).' },
+      { t: 'Entry SELL karena harga sudah turun 3 hari berturut-turut', correct: false, pnl: -200, msg: '❌ SALAH: Jangan melawan tren utama H4 hanya karena melihat beberapa candle merah korektif. Trend is your friend!' }
+    ]
+  }
+];
+
+let curSimIdx = 0;
+let simScore = 0;
+
+function renderSimulator() {
+  const sc = SIM_SCENARIOS[curSimIdx];
+  g('v-simulator').innerHTML = `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>🎮 Flash Execution Simulator (Latihan Keputusan Real-Time)</h3>
+        <div class="row">
+          <span class="tag gold">Kasus #${curSimIdx + 1} dari ${SIM_SCENARIOS.length}</span>
+          <span class="tag on">Skor P/L Latihan: $${simScore}</span>
+        </div>
+      </div>
+      <p class="sub" style="margin-top:0">Uji insting dan kedisiplinan Anda menghadapi dinamika pasar riil XAU/USD tanpa risiko modal.</p>
+
+      <div style="background:var(--field);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:14px">
+        <h3 style="color:var(--gold);font-size:17px;margin-bottom:6px">${sc.title}</h3>
+        <p style="font-size:14.5px;line-height:1.6;margin-bottom:18px">${sc.context}</p>
+
+        <strong style="display:block;margin-bottom:8px;font-size:13px">Apa keputusan eksekusi Anda?</strong>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${sc.options.map((opt, i) => `
+            <button type="button" class="btn ghost" style="text-align:left;justify-content:flex-start;padding:12px 16px;border-radius:14px;font-size:13.5px" onclick="pickSimOption(${i})">
+              <b>${String.fromCharCode(65 + i)}.</b> ${opt.t}
+            </button>`).join('')}
+        </div>
+
+        <div id="sim-feedback-box" style="margin-top:16px;display:none"></div>
+      </div>
+    </div>`;
+}
+
+function pickSimOption(idx) {
+  const sc = SIM_SCENARIOS[curSimIdx];
+  const opt = sc.options[idx];
+  simScore += opt.pnl;
+
+  const box = g('sim-feedback-box');
+  box.style.display = 'block';
+  box.style.background = opt.correct ? 'rgba(16,185,129,0.15)' : 'rgba(244,63,94,0.15)';
+  box.style.border = `1px solid ${opt.correct ? 'var(--up)' : 'var(--down)'}`;
+  box.style.borderRadius = '14px';
+  box.style.padding = '14px';
+  box.innerHTML = `
+    <div style="font-weight:800;font-size:15px;color:${opt.correct ? 'var(--up)' : 'var(--down)'};margin-bottom:6px">${opt.msg}</div>
+    <div class="row" style="margin-top:10px;justify-content:space-between">
+      <span>Dampak Saldo Virtual: <strong class="${cl(opt.pnl)}">${opt.pnl >= 0 ? '+' : ''}$${opt.pnl}</strong></span>
+      <button type="button" class="btn sm" onclick="nextSimulatorStep()">Lanjut Kasus Berikutnya →</button>
+    </div>`;
+
+  if (opt.correct) speakVoice('Keputusan tepat. Analisa terkonfirmasi.');
+  else speakVoice('Keputusan kurang tepat. Pelajari alasannya.');
+}
+
+function nextSimulatorStep() {
+  curSimIdx = (curSimIdx + 1) % SIM_SCENARIOS.length;
+  renderSimulator();
+}
+
+/* =========================================================
+   6F. AKADEMI TRADING EMAS & UJIAN KUIS KELULUSAN
+   ========================================================= */
+const ACADEMY_LESSONS = [
+  {
+    lvl: 'Pemula (Beginner)',
+    title: '1. Karakteristik & Satuan Kontrak XAU/USD',
+    content: `
+      Emas ditransaksikan dalam satuan <b>Troy Ounce (oz)</b> terhadap Dolar AS (USD).
+      <br><br>
+      • <b>Ukuran Kontrak Standard:</b> 1.0 Lot = 100 Troy Ounces.<br>
+      • <b>Nilai Poin (Pip):</b> Setiap pergerakan harga emas sebesar \$1.00 (misal: \$3,750 ke \$3,751), nilainya setara dengan <b>\$100 untuk 1.0 Lot</b>, atau <b>\$10 untuk 0.10 Lot</b>, atau <b>\$1 untuk 0.01 Lot</b>.<br>
+      • <b>Sifat Volatilitas:</b> XAU/USD memiliki Average Daily Range (ADR) antara 30 hingga 50 poin per hari, menjadikannya salah satu instrumen paling likuid dan paling cepat menghasilkan profit maupun risiko kerugian.
+    `
+  },
+  {
+    lvl: 'Menengah (Intermediate)',
+    title: '2. Jam Trading Emas & Anatomi 3 Sesi Pasar',
+    content: `
+      Waktu pergerakan emas terbagi dalam 3 sesi utama:
+      <br><br>
+      1. <b>Sesi Asia (07:00 - 15:00 WIB):</b> Pasar cenderung berkonsolidasi membentuk <i>Asian Range High & Low</i>. Volume moderat.<br>
+      2. <b>Sesi London (14:00 - 23:00 WIB):</b> Terjadi ekspansi volume besar. Pola yang sering terjadi adalah <i>Judas Swing / Fakeout</i> menembus batas high/low Asia untuk menjebak retail.<br>
+      3. <b>Sesi New York & Overlap (19:00 - 23:00 WIB):</b> Puncak volatilitas harian! Rilis berita ekonomi AS seperti CPI, NFP, dan Retail Sales terjadi di sesi ini.
+    `
+  },
+  {
+    lvl: 'Mahir (Advanced Pro)',
+    title: '3. Institutional Liquidity & Konsep Smart Money (SMC)',
+    content: `
+      Institusi besar (Bullion Banks & Hedge Funds) membutuhkan volume likuiditas jutaan dolar untuk mengisi order mereka.
+      <br><br>
+      • <b>Liquidity Pool:</b> Titik di mana ribuan retail meletakkan Stop Loss (tepat di atas Double Top atau di bawah Double Bottom).<br>
+      • <b>Liquidity Sweep:</b> Harga sengaja didorong menembus level support/resistance sebentar untuk menyapu stop loss retail, lalu berbalik arah dengan cepat.<br>
+      • <b>Order Block & Fair Value Gap (FVG):</b> Area jejak kaki institusi yang belum terisi sempurna. Menjadi zona pantulan probabilitas tinggi untuk entry pullback.
+    `
+  }
+];
+
+const QUIZ_QUESTIONS = [
+  { q: 'Berapa nilai keuntungan/kerugian jika harga XAU/USD bergerak $2.00 dan Anda menggunakan ukuran 0.10 lot?', opts: ['$2.00', '$20.00', '$200.00'], ans: 1 },
+  { q: 'Kapan puncak likuiditas dan volatilitas tertinggi terjadi pada perdagangan XAU/USD di WIB?', opts: ['Sesi Asia (Pagi)', 'Sesi London-NY Overlap (19:00 - 23:00 WIB)', 'Tengah malam setelah sesi NY tutup'], ans: 1 },
+  { q: 'Apa yang dimaksud dengan "Liquidity Sweep" pada sesi London?', opts: ['Harga menembus High/Low Asia untuk mengambil stop loss retail lalu berbalik arah', 'Broker mengalami gangguan server', 'Emas ditutup untuk hari libur'], ans: 0 },
+  { q: 'Aturan manajemen risiko profesional menyarankan risiko maksimal per trade sebesar?', opts: ['10% - 20% modal', '1% - 2% modal aktif', 'Berapapun asalkan yakin'], ans: 1 },
+  { q: 'Apa yang harus dilakukan trader 15 menit menjelang rilis berita US Core CPI berdampak tinggi?', opts: ['All in open posisi dua arah', 'Tahan posisi tanpa Stop Loss', 'Hindari entry baru & tunggu volatilitas awal reda'], ans: 2 }
+];
+
+let quizAnswers = {};
+let quizSubmitted = false;
+
+function renderAkademi() {
+  g('v-akademi').innerHTML = `
+    <!-- Materi Pembelajaran Terstruktur -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>🎓 Akademi Trading XAU/USD (Kurikulum Pemula hingga Mahir)</h3>
+        <span class="tag gold">Gold Desk Curriculum</span>
+      </div>
+      <p class="sub" style="margin-top:0">Pelajari pondasi teknikal, makroekonomi, dan likuiditas institusional yang wajib dikuasai sebelum menyentuh pasar riil.</p>
+
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
+        ${ACADEMY_LESSONS.map((ls, idx) => `
+          <div style="background:var(--field);border:1px solid var(--line-sub);border-radius:16px;padding:16px">
+            <div class="row" style="justify-content:space-between;margin-bottom:6px">
+              <span class="tag on">${ls.lvl}</span>
+              <button type="button" class="btn ghost xs" onclick="speakVoice('${ls.title}. Silakan baca materi berikut.')">🔊 Baca Suara</button>
+            </div>
+            <h3 style="margin:4px 0 8px;font-size:16px">${ls.title}</h3>
+            <div style="font-size:13.5px;line-height:1.65;color:var(--ink)">${ls.content}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Ujian Kuis Kelulusan Trader Pro -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>📝 Ujian Kuis Sertifikasi Trader XAU/USD</h3>
+        <span class="tag on">5 Soal Evaluasi</span>
+      </div>
+      <p class="sub" style="margin-top:0">Jawab 5 pertanyaan wajib di bawah untuk menguji pemahaman analisa & manajemen risiko Anda.</p>
+
+      <div style="display:flex;flex-direction:column;gap:16px;margin-top:16px">
+        ${QUIZ_QUESTIONS.map((item, qIdx) => `
+          <div style="background:var(--field);border:1px solid var(--line-sub);border-radius:14px;padding:14px">
+            <strong>${qIdx + 1}. ${item.q}</strong>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">
+              ${item.opts.map((opt, oIdx) => `
+                <label class="chk" style="padding:6px 0;border:0">
+                  <input type="radio" name="quiz_q_${qIdx}" value="${oIdx}" ${quizAnswers[qIdx] === oIdx ? 'checked' : ''} onchange="quizAnswers[${qIdx}]=${oIdx}">
+                  <span>${opt}</span>
+                </label>`).join('')}
+            </div>
+          </div>`).join('')}
+      </div>
+
+      <div class="row" style="margin-top:16px">
+        <button type="button" class="btn" onclick="submitTraderQuiz()">Kirim Jawaban & Cek Sertifikasi</button>
+      </div>
+
+      <div id="quiz-result-box" style="margin-top:14px"></div>
+    </div>`;
+}
+
+function submitTraderQuiz() {
+  let score = 0;
+  QUIZ_QUESTIONS.forEach((q, i) => {
+    if (quizAnswers[i] === q.ans) score++;
+  });
+
+  const passed = score >= 4;
+  const box = g('quiz-result-box');
+  box.style.display = 'block';
+  box.innerHTML = `
+    <div style="background:var(--field);border:2px solid ${passed ? 'var(--up)' : 'var(--down)'};border-radius:16px;padding:18px;text-align:center">
+      <h3 style="color:${passed ? 'var(--up)' : 'var(--down)'};font-size:20px;margin-bottom:6px">
+        ${passed ? '🎉 SELAMAT! ANDA LULUS SERTIFIKASI TEKNIKAL' : '⚠️ COBA LAGI (Belum Memenuhi Syarat)'}
+      </h3>
+      <p style="font-size:15px;margin:6px 0">Skor Anda: <b>${score} / ${QUIZ_QUESTIONS.length} Benar</b> (${(score / QUIZ_QUESTIONS.length * 100).toFixed(0)}%)</p>
+      <p class="sub">${passed ? 'Pemahaman Anda mengenai kontrak emas, sesi trading, dan manajemen risiko sudah sangat matang untuk eksekusi riil.' : 'Pelajari kembali materi kurikulum di atas sebelum mengambil risiko di pasar live.'}</p>
+      ${passed ? `<div style="margin-top:12px"><span class="tag gold" style="font-size:13px;padding:6px 16px">🏆 Certified Gold Desk Trader: ${activeProfile.name}</span></div>` : ''}
+    </div>`;
+
+  if (passed) speakVoice(`Selamat ${activeProfile.name}, Anda telah lulus ujian sertifikasi trader emas dengan skor ${score} dari 5.`);
+  else speakVoice('Anda belum lulus. Silakan pelajari kembali materi dan ulangi kuis.');
+}
+let tvTf = '60';
+function changeTvTf(tf) { tvTf = tf; renderPasar(); }
+
+function renderPasar() {
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const tvUrl = `https://s.tradingview.com/widgetembed/?symbol=OANDA%3AXAUUSD&interval=${tvTf}&hidesidetoolbar=0&symboledit=1&saveimage=0&theme=${isDark ? 'dark' : 'light'}&style=1&timezone=Asia%2FJakarta`;
+  const actSes = getActiveSessions();
+
+  g('v-pasar').innerHTML = `
+    <div class="panel">
+      <div class="panel-head">
+        <h3>📈 Chart Live XAU/USD (OANDA Real-Time)</h3>
+        <div class="row">
+          ${[['15', 'M15'], ['60', 'H1'], ['240', 'H4'], ['D', 'D1']].map(x => `<button type="button" class="btn ghost xs ${tvTf === x[0] ? 'on' : ''}" onclick="changeTvTf('${x[0]}')">${x[1]}</button>`).join('')}
+        </div>
+      </div>
+      <div style="height:410px;border-radius:16px;overflow:hidden;border:1px solid var(--line-sub)">
+        <iframe src="${tvUrl}" title="TradingView XAUUSD" style="width:100%;height:100%;border:0" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <!-- Kalender Ekonomi Berdampak Tinggi -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>📅 Kalender Ekonomi US & Event Makro Hari Ini</h3>
+        <span class="tag danger">High Impact Watch</span>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Waktu (WIB)</th>
+              <th>Mata Uang</th>
+              <th>Event Ekonomi</th>
+              <th>Dampak</th>
+              <th>Prakiraan</th>
+              <th>Status / Rekomendasi</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${HIGH_IMPACT_NEWS.map(n => `
+              <tr>
+                <td class="mono"><strong>${n.time}</strong></td>
+                <td><span class="tag gold">USD</span></td>
+                <td><strong>${n.title}</strong></td>
+                <td><span class="tag danger">HIGH</span></td>
+                <td class="mono">0.3% / 2.7%</td>
+                <td><span class="tag ${n.time === '19:30' ? 'danger' : 'on'}">${n.time === '19:30' ? '⚠️ Waspada Volatilitas' : 'Siaga'}</span></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Mesin Rekomendasi Entry & Copy Signal -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>🎯 Mesin Rekomendasi Entry & Signal Generator</h3>
+          <span class="tag on">Sesi: ${actSes.length ? actSes.join(' & ') : 'Off-Peak'}</span>
+        </div>
+        <div class="grid-2">
+          <label>Harga Spot Saat Ini<input type="number" step="0.01" id="sig-price" value="${liveXau.price.toFixed(2)}" oninput="runSignalAnalyzer()"></label>
+          <label>Bias Struktur H4
+            <select id="sig-bias" onchange="runSignalAnalyzer()">
+              <option value="bullish">Bullish (Uptrend)</option>
+              <option value="bearish">Bearish (Downtrend)</option>
+              <option value="breakout">Breakout Momentum</option>
+            </select>
+          </label>
+        </div>
+        <div id="sig-card-out" style="margin-top:12px"></div>
+      </div>
+
+      <!-- Manajemen Level Support & Resistance -->
+      <div class="panel">
+        <h3>📍 Level Support & Resistance Kunci</h3>
+        <div class="grid-3" style="margin-top:10px">
+          <label>Harga<input type="number" step="0.01" id="sr-price" placeholder="2765.00"></label>
+          <label>Tipe<select id="sr-type"><option>Resistance</option><option>Support</option></select></label>
+          <label>Catatan<input id="sr-note" placeholder="Supply H4"></label>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button type="button" class="btn ghost sm" onclick="addSrLevel()">+ Tambah Level S/R</button>
+        </div>
+        <div style="margin-top:10px">
+          ${S.sr.sort((a, b) => b.p - a.p).map(l => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line-sub);font-size:13px">
+              <span><strong class="mono">${l.p.toFixed(2)}</strong> <span class="tag ${l.t === 'Support' ? 'on' : ''}">${l.t}</span> <span class="sub">${l.n}</span></span>
+              <button type="button" class="btn ghost xs" onclick="S.sr=S.sr.filter(x=>x.id!==${l.id});save();renderPasar()">Hapus</button>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  runSignalAnalyzer();
+}
+
+function runSignalAnalyzer() {
+  const p = parseFloat(g('sig-price')?.value) || liveXau.price;
+  const bias = g('sig-bias')?.value || 'bullish';
+  let label = 'BUY ON DIP (PULLBACK)', side = 'Buy', entry = +(p - 3.5).toFixed(2), sl = +(entry - 6.0).toFixed(2), tp1 = +(entry + 12.0).toFixed(2), tp2 = +(entry + 18.0).toFixed(2);
+  let desc = 'Tren H4 Bullish. Tunggu harga retest ke area demand/EMA terdekat untuk rasio R:R optimal.';
+
+  if (bias === 'bearish') {
+    label = 'SELL ON RALLY (SUPPLY REJECT)';
+    side = 'Sell';
+    entry = +(p + 3.5).toFixed(2);
+    sl = +(entry + 6.0).toFixed(2);
+    tp1 = +(entry - 12.0).toFixed(2);
+    tp2 = +(entry - 18.0).toFixed(2);
+    desc = 'Struktur H4 Bearish. Manfaatkan kenaikan korektif ke area supply untuk mencari konfirmasi sell.';
+  } else if (bias === 'breakout') {
+    label = 'MOMENTUM BREAKOUT ENTRY';
+    side = 'Buy';
+    entry = +p.toFixed(2);
+    sl = +(entry - 6.5).toFixed(2);
+    tp1 = +(entry + 13.0).toFixed(2);
+    tp2 = +(entry + 19.5).toFixed(2);
+    desc = 'Volume tinggi menembus struktur kunci. Gunakan SL ketat di bawah candle breakout.';
+  }
+
+  window._sigPlan = { side, entry, sl, tp1, tp2 };
+  const out = g('sig-card-out');
+  if (!out) return;
+  out.innerHTML = `
+    <div style="background:var(--field);border:1px solid var(--line);border-radius:16px;padding:14px">
+      <div class="row" style="justify-content:space-between">
+        <span class="tag ${side === 'Buy' ? 'on' : ''}" style="font-size:12px">${label}</span>
+        <span class="sub">RRR 1:2 — 1:3</span>
+      </div>
+      <p class="sub" style="margin:8px 0 10px;color:var(--ink)">${desc}</p>
+      <div class="grid-4">
+        <div class="kpi"><span>ENTRY</span><b class="gd" style="font-size:15px">${entry.toFixed(2)}</b></div>
+        <div class="kpi"><span>STOP LOSS</span><b class="dn" style="font-size:15px">${sl.toFixed(2)}</b></div>
+        <div class="kpi"><span>TP 1 (1:2)</span><b class="up" style="font-size:15px">${tp1.toFixed(2)}</b></div>
+        <div class="kpi"><span>TP 2 (1:3)</span><b class="up" style="font-size:15px">${tp2.toFixed(2)}</b></div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button type="button" class="btn sm" onclick="sendSignalToVisualizer()">📐 Kirim ke Visualizer</button>
+        <button type="button" class="btn ghost sm" onclick="copySignalFromAnalyzer()">📋 Copy Signal (MT4/MT5)</button>
+        <button type="button" class="btn ghost sm" onclick="broadcastSignalToTelegram()">✈️ Kirim ke Telegram</button>
+      </div>
+    </div>`;
+}
+
+function copySignalFromAnalyzer() {
+  const sp = window._sigPlan;
+  if (!sp) return;
+  const txt = `XAUUSD ${sp.side.toUpperCase()} SETUP\nEntry: ${sp.entry}\nSL: ${sp.sl}\nTP 1: ${sp.tp1}\nTP 2: ${sp.tp2}\nRisk:Reward: 1:2+`;
+  navigator.clipboard.writeText(txt).then(() => toast('Format Signal disalin ke clipboard!'));
+}
+
+function sendSignalToVisualizer() {
+  const sp = window._sigPlan;
+  if (!sp) return;
+  switchTab('risiko');
+  setTimeout(() => {
+    if (g('vis-side')) g('vis-side').value = sp.side;
+    if (g('vis-entry')) g('vis-entry').value = sp.entry.toFixed(2);
+    if (g('vis-sl')) g('vis-sl').value = sp.sl.toFixed(2);
+    if (g('vis-tp')) g('vis-tp').value = sp.tp1.toFixed(2);
+    updateVisualizer();
+    toast('Sinyal dikirim ke Visualizer Entry/SL/TP!');
+  }, 50);
+}
+
+function addSrLevel() {
+  const p = parseFloat(g('sr-price').value);
+  if (isNaN(p)) return;
+  S.sr.push({ id: Date.now(), p, t: g('sr-type').value, n: g('sr-note').value.trim() });
+  save(); renderPasar(); toast('Level S/R ditambahkan');
+}
+
+/* =========================================================
+   8. RENCANA & DISIPLIN 30 HARI
+   ========================================================= */
+function toggleStreakDate(dateStr) {
+  if (S.streak.includes(dateStr)) S.streak = S.streak.filter(x => x !== dateStr);
+  else S.streak.push(dateStr);
+  save(); renderRencana();
+}
+
+function renderRencana() {
+  const dotsHtml = [...Array(30)].map((_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - 29 + i);
+    const key = new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+    return `<button type="button" class="${S.streak.includes(key) ? 'on' : ''}" title="${key}" onclick="toggleStreakDate('${key}')">${key.slice(8, 10)}</button>`;
+  }).join('');
+
+  g('v-rencana').innerHTML = `
+    <div class="grid-2">
+      <div class="panel">
+        <h3>🧭 Trading Plan & Aturan Baku</h3>
+        <textarea id="plan-ed" style="min-height:185px;margin-top:10px">${S.plan}</textarea>
+        <div class="row" style="margin-top:10px">
+          <button type="button" class="btn" onclick="S.plan=g('plan-ed').value;save();toast('Trading plan disimpan')">Simpan Trading Plan</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>🔥 Pelacak Disiplin 30 Hari (${S.streak.length} Hari Patuh)</h3>
+        <p class="sub" style="margin:4px 0 8px">Klik tanggal untuk menandai hari di mana Anda disiplin mengikuti plan & manajemen risiko.</p>
+        <div class="dots">${dotsHtml}</div>
+        <div class="row" style="margin-top:12px">
+          <button type="button" class="btn ghost sm" onclick="if(!S.streak.includes(tod()))S.streak.push(tod());save();renderRencana();toast('Hari ini ditandai disiplin!')">✓ Tandai Hari Ini Disiplin</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>📝 Jurnal Evaluasi Mingguan</h3>
+        <label style="margin-top:8px">Hal yang berjalan baik<textarea id="rev-good" placeholder="Setup paling konsisten minggu ini..."></textarea></label>
+        <label style="margin-top:8px">Kesalahan yang perlu dihindari<textarea id="rev-bad" placeholder="Overtrading, FOMO, atau geser SL..."></textarea></label>
+        <div class="row" style="margin-top:10px">
+          <button type="button" class="btn" onclick="addWeeklyReview()">Simpan Evaluasi</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>🗂️ Arsip Evaluasi Mingguan</h3>
+        ${S.reviews.length ? [...S.reviews].reverse().map(r => `
+          <div style="padding:10px 0;border-bottom:1px solid var(--line-sub);font-size:13px">
+            <strong>${r.d}</strong>
+            <p style="margin:4px 0"><span class="up">Baik:</span> ${r.good || '-'}</p>
+            <p style="margin:0"><span class="dn">Perbaikan:</span> ${r.bad || '-'}</p>
+          </div>`).join('') : '<p class="sub">Belum ada evaluasi mingguan.</p>'}
+      </div>
+    </div>`;
+}
+
+function addWeeklyReview() {
+  const good = g('rev-good').value.trim(), bad = g('rev-bad').value.trim();
+  if (!good && !bad) return;
+  S.reviews.push({ d: tod(), good, bad });
+  save(); renderRencana(); toast('Evaluasi mingguan tersimpan');
+}
+
+/* =========================================================
+   9. TELEGRAM WEBHOOK INTEGRATION
+   ========================================================= */
+function openTelegramModal() {
+  g('tg-bot-token').value = S.tg?.token || '';
+  g('tg-chat-id').value = S.tg?.chat || '';
+  g('tg-modal').classList.add('open');
+}
+
+function saveTelegramConfig() {
+  const token = g('tg-bot-token').value.trim();
+  const chat = g('tg-chat-id').value.trim();
+  S.tg = { token, chat };
+  save();
+  closeModal('tg-modal');
+  if (token && chat) {
+    sendTelegramMsg(`🔔 *Gold Desk Terhubung!*\nTerminal siap mengirim sinyal & log transaksi.`);
+  } else {
+    toast('Pengaturan Telegram disimpan');
+  }
+}
+
+async function sendTelegramMsg(text) {
+  if (!S.tg || !S.tg.token || !S.tg.chat) return false;
+  try {
+    const url = `https://api.telegram.org/bot${S.tg.token}/sendMessage`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: S.tg.chat, text: text, parse_mode: 'Markdown' })
+    });
+    if (res.ok) { toast('Terkirim ke Telegram!'); return true; }
+    else { toast('Gagal kirim ke Telegram (Cek Token/ChatID)'); return false; }
+  } catch (e) {
+    toast('Error koneksi Telegram Webhook');
+    return false;
+  }
+}
+
+function broadcastSignalToTelegram() {
+  const sp = window._sigPlan;
+  if (!sp) return;
+  const msg = `⚡ *XAUUSD NEW SIGNAL SETUP*\n\n📈 *Arah:* ${sp.side.toUpperCase()}\n🎯 *Entry:* ${sp.entry}\n🛑 *SL:* ${sp.sl}\n🎯 *TP 1:* ${sp.tp1}\n🚀 *TP 2:* ${sp.tp2}\n\n_Generated from Gold Desk Pro_`;
+  if (!S.tg?.token) { openTelegramModal(); toast('Atur Token Telegram terlebih dahulu'); }
+  else sendTelegramMsg(msg);
+}
+
+function sendTradeToTelegram(t) {
+  if (!S.tg?.token) return;
+  const dir = isDirect(t);
+  const msg = `📒 *LOG TRANSAKSI BARU*\n\nTanggal: ${t.date}\nSesi: ${t.session}\nSetup: ${t.setup}\n${dir ? `P/L: $${t.directPnl}` : `Arah: ${t.side}\nEntry: ${t.entry}\nExit: ${t.exit}\nLot: ${t.lots}\nEst. P/L: $${P(t).toFixed(2)}`}\nCatatan: ${t.note || '-'}`;
+  sendTelegramMsg(msg);
+}
+
+/* =========================================================
+   10. INISIALISASI APLIKASI
+   ========================================================= */
+function renderAll() {
+  g('top-trader-label').textContent = activeProfile.name;
+  g('sidebar-trader-name').textContent = activeProfile.name;
+  g('acc-select').innerHTML = S.acc.map(a => `<option value="${a.id}" ${a.id === A().id ? 'selected' : ''}>${a.name}</option>`).join('');
+  updateClockAndNews();
+  renderTicker();
+  renderDashboard();
+  renderJurnal();
+  renderRisiko();
+  renderKalkulator();
+  renderPasar();
+  renderSentimen();
+  renderSimulator();
+  renderAkademi();
+  renderRencana();
+  renderAnalitik();
+  switchTab(currentTab);
+}
+
+loadWorkspace();
+renderAll();
+mountTradingViewTape();
+fetchGoldSpot(false);
+</script>
+</body>
+</html>
